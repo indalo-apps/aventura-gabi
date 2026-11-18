@@ -444,3 +444,7 @@ body { height: 100vh; height: 100dvh; }
 #panelPrizes, #panelPrizes .sub, .subtabs { min-width: 0; max-width: 100%; }
 #rewards { background: rgba(43, 45, 92, .9); }
 @media (max-width: 640px) { .subtabs { width: 0; min-width: 100%; } }
+/* La zona va en la tarjeta de la pregunta, no encima del mapa */
+#qcard { position: relative; }
+#qcard .maptag { left: auto; right: 14px; top: 12px; background: #f1edff; color: var(--accent-dark); font-size: .875rem; padding: 4px 12px; }
+#qcard .qlabel { padding-right: 130px; }

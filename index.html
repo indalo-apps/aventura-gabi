@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="2.1">
+<meta name="app-version" content="2.1.1">
 <meta name="app-date" content="18/11/2026">
 <title>La aventura de Gabi por España</title>
 <meta name="description" content="Juego para aprender las provincias de España con Adela.">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=2.1">
+<link rel="stylesheet" href="css/style.css?v=2.1.1">
 </head>
 <body>
 
@@ -94,7 +94,6 @@
 
   <section class="mapcard" aria-label="Mapa de España">
     <svg id="map" viewBox="0 0 960 600" role="img" aria-label="Mapa de las provincias de España"></svg>
-    <div class="maptag" id="maptag">Toda España</div>
     <div class="toasts" id="toasts" aria-hidden="true"></div>
     <div class="legend" id="legend" hidden>
       <span class="sw sw-ok">A la primera</span><span class="sw sw-meh">Con algún fallo</span><span class="sw sw-bad">Para repasar</span>
@@ -109,6 +108,7 @@
 
   <aside class="panel">
     <div class="card" id="qcard">
+      <div class="maptag" id="maptag">Toda España</div>
       <p class="qlabel" id="qlabel">¿Dónde está…?</p>
       <div class="qline"><p class="qname" id="qname">…</p><button class="hear" id="hearBtn" aria-label="Escuchar el nombre" title="Escuchar"><svg class="ic" aria-hidden="true"><use href="#i-sound"/></svg></button></div>
       <p class="qsub" id="qsub"></p>
@@ -351,7 +351,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-composite-projections@1.4.0/d3-composite-projections.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="js/data.js?v=2.1"></script>
-<script src="js/app.js?v=2.1"></script>
+<script src="js/data.js?v=2.1.1"></script>
+<script src="js/app.js?v=2.1.1"></script>
 </body>
 </html>

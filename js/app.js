@@ -284,8 +284,9 @@ function setCanaryLayout() {
   if (mode === "below") {
     const mb = boundsOf(ALL.filter(id => !isCan(id)), 0), gap = mb[3] * .05, A = card.clientWidth / Math.max(1, card.clientHeight);
     const fill = (mb[2] / (A * .98) - mb[3] - gap) / insetBox[3];
-    s = Math.max(1, Math.min(mb[2] / insetBox[2], fill));
-    dx = mb[0] + (mb[2] - insetBox[2] * s) / 2 - insetBox[0] * s;
+    // Canarias a la izquierda, dejando a la derecha sitio para los botones de zoom
+    s = Math.max(.8, Math.min(mb[2] * .8 / insetBox[2], fill));
+    dx = mb[0] - insetBox[0] * s;
     dy = mb[1] + mb[3] + gap - insetBox[1] * s;
   }
   const key = mode + s.toFixed(2);

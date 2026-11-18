@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="2.1.1">
+<meta name="app-version" content="2.2">
 <meta name="app-date" content="18/11/2026">
 <title>La aventura de Gabi por España</title>
 <meta name="description" content="Juego para aprender las provincias de España con Adela.">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=2.1.1">
+<link rel="stylesheet" href="css/style.css?v=2.2">
 </head>
 <body>
 
@@ -262,7 +262,7 @@
       </div>
       </section>
     </div>
-    <p class="version" id="version"></p>
+    <button class="version" id="version"></button>
   </div>
 </div>
 
@@ -318,6 +318,18 @@
   </div>
 </div>
 
+<!-- Novedades después de actualizar -->
+<div class="screen" id="newsDlg" hidden role="dialog" aria-labelledby="newsTitle">
+  <div class="sbox newsbox">
+    <div class="rwcard">
+      <svg class="rwadela" viewBox="0 0 100 100" id="newsAdela" aria-hidden="true"></svg>
+      <h2 id="newsTitle">¡Novedades en el juego!</h2>
+      <div class="newslist" id="newsList"></div>
+    </div>
+    <div class="row"><button class="btn primary" id="newsClose">¡A jugar!</button></div>
+  </div>
+</div>
+
 <!-- Ficha de un cromo -->
 <div class="screen" id="cromoDlg" hidden role="dialog" aria-label="Cromo">
   <div class="sbox cromodlg">
@@ -343,7 +355,7 @@
   </div>
 </div>
 
-<button class="update" id="updateBar" hidden>Hay una versión nueva del juego. Toca aquí para actualizar</button>
+<div class="update" id="updateBar" hidden role="status">✨ ¡Versión nueva! Actualizando…</div>
 <canvas id="confetti"></canvas>
 <div class="sr" id="sr" aria-live="assertive"></div>
 
@@ -351,7 +363,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-composite-projections@1.4.0/d3-composite-projections.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="js/data.js?v=2.1.1"></script>
-<script src="js/app.js?v=2.1.1"></script>
+<script src="js/data.js?v=2.2"></script>
+<script src="js/app.js?v=2.2"></script>
 </body>
 </html>

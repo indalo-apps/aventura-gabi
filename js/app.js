@@ -1637,24 +1637,67 @@ function renderMedals() {
   $("#medals").innerHTML = MEDALS.map(([id, e, t, d]) => '<div class="medalc' + (got[id] ? "" : " locked") + '"><span class="medal">' + (got[id] ? e : "🔒") + "</span><b>" + t + "</b><small>" + d + "</small></div>").join("");
 }
 
-// ---------- Aviso de versión nueva (solo publicada en una web, p. ej. Netlify) ----------
+// ---------- Actualización automática y novedades ----------
+// Lo que trae cada versión, contado para Gabi (lo más nuevo, arriba)
+const NEWS = [
+  ["2.2", ["🔄 El juego se actualiza solo y te cuenta las novedades, ¡como ahora!"]],
+  ["2.1", ["🗂️ «Mis premios» ahora tiene pestañas: Cromos, Medallas, Adela, Diplomas, Diario…",
+           "🎁 Al acabar una partida, los premios salen de uno en uno",
+           "👆 Botones más grandes y letras más fáciles de leer",
+           "🗺️ El mapa se ve mejor y el nombre de la zona ya no lo tapa"]],
+  ["2.0", ["🃏 Álbum de cromos: acierta una provincia a la primera y su cromo es tuyo. ¡Algunos salen brillantes! ✨",
+           "🏀 Datos de baloncesto en muchas provincias. ¡Y Adela puede llevar balón!",
+           "🏅 Hay 14 medallas para ganar",
+           "📔 Diario del explorador: lo que consigues cada día"]],
+  ["1.9", ["🏆 Nuevo juego: «Reta a papá o mamá», por turnos en el mismo iPad"]],
+];
+const verCmp = (a, b) => { const x = a.split(".").map(Number), y = b.split(".").map(Number); for (let i = 0; i < 3; i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
+function showNews(since) {
+  const list = NEWS.filter(([v]) => !since || verCmp(v, since) > 0);
+  if (!list.length) return false;
+  $("#newsAdela").innerHTML = adelaSVG("cheer");
+  $("#newsTitle").textContent = since ? "¡Novedades en el juego, " + KID + "!" : "Lo último del juego";
+  $("#newsList").innerHTML = list.map(([v, items]) => "<h4>Versión " + v + "</h4><ul>" + items.map(t => "<li>" + t + "</li>").join("") + "</ul>").join("");
+  showScreen($("#newsDlg")); Sound.great(); confetti(120);
+  return true;
+}
+$("#newsClose").onclick = () => { Sound.tap(); hideScreen($("#newsDlg")); };
+$("#version").onclick = () => showNews(null);
+// Al abrir una versión nueva por primera vez, se enseñan sus novedades (una sola vez)
+function newsOnStart() {
+  let seen = store.get("gabi:seenVersion");
+  // Quien ya jugaba antes de que existieran las novedades, ve las de las últimas versiones
+  if (!seen && store.get("gabi:totalStars") != null) seen = "1.8";
+  store.set("gabi:seenVersion", APP_VERSION);
+  if (seen && verCmp(APP_VERSION, seen) > 0) setTimeout(() => showNews(seen), 900);
+}
+// Busca versión nueva; si Gabi no está en mitad de una partida, se actualiza sola en ese momento
+let pendingUpdate = false;
+const safeToReload = () => !$("#home").hidden && [...document.querySelectorAll(".screen")].every(x => x.id === "home" || x.hidden);
+function doUpdate() {
+  if (!safeToReload()) { pendingUpdate = true; return; }
+  $("#updateBar").hidden = false;
+  setTimeout(() => location.reload(), 1200);
+}
 async function checkUpdate() {
   if (IN_CLAUDE || !/^https?:/.test(location.protocol)) return;
   try {
     const txt = await (await fetch(location.pathname + "?v=" + Date.now(), { cache: "no-store" })).text();
     const m = txt.match(/name="app-version" content="([^"]+)"/);
-    if (m && m[1] !== APP_VERSION) { $("#updateBar").innerHTML = ic("gift") + "Hay una versión nueva del juego (" + m[1] + "). Toca aquí para actualizar"; $("#updateBar").hidden = false; }
+    if (m && m[1] !== APP_VERSION && verCmp(m[1], APP_VERSION) > 0) doUpdate();
   } catch (e) {}
 }
-$("#updateBar").onclick = () => location.reload();
-// Sin internet: en la web (Netlify) un service worker guarda el juego y sus librerías para que funcione sin conexión
+// Al volver al menú, si había una versión nueva esperando, se actualiza
+new MutationObserver(() => { if (pendingUpdate && safeToReload()) { pendingUpdate = false; doUpdate(); } })
+  .observe(document.body, { subtree: true, attributes: true, attributeFilter: ["hidden"] });
+// Sin internet: en la web un service worker guarda el juego y sus librerías para que funcione sin conexión
 if (!IN_CLAUDE && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
-  addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  addEventListener("load", () => navigator.serviceWorker.register("sw.js").then(r => r.update()).catch(() => {}));
 }
-$("#version").textContent = "Versión " + APP_VERSION + " · " + APP_DATE;
+$("#version").innerHTML = "Versión " + APP_VERSION + " · " + APP_DATE + ' · <u>Novedades</u>';
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(); });
-setInterval(checkUpdate, 10 * 60 * 1000);
-setTimeout(checkUpdate, 3000);
+setInterval(checkUpdate, 5 * 60 * 1000);
+setTimeout(checkUpdate, 1500);
 if (!ZONES.some(z => z[0] === S.zone)) S.zone = "all";
 // Las fotos (v1.7) y las fechas (v1.8) de los viajes se retiraron: se borran las que hubiera guardadas
 (() => { const t = getTrips(); let ch = false; Object.values(t).forEach(v => { if (v && (v.photo || v.note !== undefined)) { delete v.photo; delete v.note; ch = true; } }); if (ch) setTrips(t); })();
@@ -1663,3 +1706,4 @@ if (store.get("gabi:rankSeen") == null) store.set("gabi:rankSeen", levelOf(total
 if (store.get("gabi:announced") == null) store.set("gabi:announced", totalStars());
 renderPrizes();
 showHome();
+newsOnStart();

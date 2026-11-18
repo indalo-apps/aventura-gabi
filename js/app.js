@@ -325,7 +325,7 @@ $("#zout").onclick = () => svg.transition().duration(250).call(zoom.scaleBy, 1 /
 const homeView = () => S.zone === "all" || !S.pool || !S.pool.length ? null : S.pool;
 $("#zhome").onclick = () => { S.zoomed = false; zoomTo(homeView()); };
 function zoomTo(ids, instant) {
-  const target = ids ? boundsOf(ids, 0.12) : HOME;
+  const target = ids ? boundsOf(ids, 0.06) : HOME;
   const from = vb.join(" "), to = target.join(" ");
   vb = target;
   zoom.translateExtent([[target[0], target[1]], [target[0] + target[2], target[1] + target[3]]]);
@@ -440,7 +440,7 @@ function tick() {
 }
 
 // ---------- Estado ----------
-const S = { mode: store.get("gabi:mode") || "find", zone: store.get("gabi:zone") || "all", len: store.get("gabi:len") || "10",
+const S = { mode: store.get("gabi:mode") || "find", zone: store.get("gabi:zone") || "all", len: "10",
   pool: [], queue: [], total: 0, done: 0, cur: null, miss: 0, stars: 0, streak: 0, best: 0, first: 0, results: {}, locked: false, opts: [] };
 const DATO = {"01": "Su capital, Vitoria-Gasteiz, es también la capital del País Vasco.", "02": "Es famosa desde hace siglos por sus navajas y cuchillos.", "03": "Frente a su costa está Tabarca, la única isla habitada de la Comunitat Valenciana.", "04": "Tiene el desierto de Tabernas, donde se han rodado muchas películas del Oeste.", "05": "Su muralla medieval rodea toda la ciudad antigua y es una de las mejor conservadas del mundo.", "06": "Es la provincia más grande de España.", "07": "Está formada por islas: Mallorca, Menorca, Ibiza y Formentera son las más grandes.", "08": "Allí está la Sagrada Familia, el templo de Gaudí que lleva más de 140 años construyéndose.", "09": "En la sierra de Atapuerca se han encontrado algunos de los restos humanos más antiguos de Europa.", "10": "Tiene el Parque Nacional de Monfragüe, famoso por sus buitres, águilas y cigüeñas negras.", "11": "Su capital es una de las ciudades más antiguas de Europa occidental: la fundaron los fenicios hace unos 3.000 años.", "12": "Frente a su costa están las islas Columbretes, que son restos de antiguos volcanes.", "13": "Es tierra de Don Quijote: en Campo de Criptana están sus famosos molinos de viento.", "14": "Tiene la Mezquita-Catedral, con un bosque de cientos de columnas y arcos rojos y blancos.", "15": "Tiene la Torre de Hércules, el faro romano más antiguo del mundo que sigue funcionando.", "16": "Sus Casas Colgadas parecen flotar sobre un precipicio.", "17": "En el cabo de Creus está el punto más al este de la península ibérica.", "18": "Tiene la Alhambra y el Mulhacén, el pico más alto de la península ibérica.", "19": "Tiene pueblos de arquitectura negra, con casas hechas de pizarra oscura.", "20": "Es la provincia más pequeña de España.", "21": "Desde el puerto de Palos salió Cristóbal Colón en 1492 rumbo a América.", "22": "Tiene el Aneto, el pico más alto de los Pirineos.", "23": "Tiene tantísimos olivos que es uno de los lugares del mundo donde más aceite de oliva se produce.", "24": "Su catedral es famosa por sus enormes vidrieras de colores.", "25": "Tiene el Parque Nacional de Aigüestortes, el único parque nacional de Cataluña.", "26": "En San Millán de la Cogolla se escribieron algunas de las primeras palabras en español que se conocen.", "27": "Su muralla romana es la única del mundo que se conserva entera.", "28": "En la Puerta del Sol está el kilómetro cero, desde donde se miden las carreteras de España.", "29": "Allí nació el famoso pintor Pablo Picasso.", "30": "Tiene el Mar Menor, una gran laguna de agua salada junto al Mediterráneo.", "31": "En Pamplona se celebran los Sanfermines cada mes de julio.", "32": "Es famosa por sus aguas termales: hay fuentes de agua caliente en plena ciudad.", "33": "Tiene parte de los Picos de Europa y es famosa por la sidra.", "34": "Por ella pasa el Canal de Castilla, por el que antes navegaban barcas cargadas de trigo.", "35": "Incluye Gran Canaria, Lanzarote y Fuerteventura; en Lanzarote hay paisajes volcánicos que parecen de otro planeta.", "36": "Frente a su costa están las islas Cíes, con playas de arena blanca.", "37": "Tiene una de las universidades más antiguas de Europa, y en su fachada se esconde una rana que todo el mundo intenta encontrar.", "38": "En Tenerife está el Teide, el pico más alto de España.", "39": "En la cueva de Altamira hay pinturas de bisontes hechas hace miles de años.", "40": "Tiene un acueducto romano construido sin cemento: sus piedras se sujetan solas.", "41": "Es la capital de Andalucía y tiene la Giralda, la torre de su catedral.", "42": "En sus Picos de Urbión nace el río Duero.", "43": "Tiene un anfiteatro romano junto al mar y el delta del Ebro, lleno de arrozales y aves.", "44": "Es famosa por los Amantes de Teruel y tiene Dinópolis, un parque de dinosaurios.", "45": "La llaman «la ciudad de las tres culturas» porque allí convivieron cristianos, musulmanes y judíos.", "46": "Es la tierra de la paella y de las Fallas, que se queman cada mes de marzo.", "47": "Su capital fue capital de España durante unos años, a principios del siglo XVII.", "48": "Tiene el Museo Guggenheim de Bilbao, forrado de titanio, y el Puente de Bizkaia, el puente transbordador más antiguo del mundo.", "49": "Su capital es conocida como «la ciudad del románico» por sus muchas iglesias antiguas.", "50": "Tiene la basílica del Pilar, a orillas del Ebro, el río más caudaloso de España.", "51": "Está en el norte de África, frente al estrecho de Gibraltar.", "52": "Está en el norte de África y tiene muchísimos edificios modernistas."};
 const MODE_TXT = { duel: "Reta a papá o mamá", find: "¿Dónde está?", name: "¿Cuál es?", cap: "Capitales", ccaa: "Comunidades", time: "Contrarreloj", explore: "Explorar" };
@@ -464,7 +464,9 @@ function setupMap() {
   S.pool = poolFor(S.zone);
   ALL.forEach(id => { const on = S.pool.includes(id); cls(id, "off", !on); if (hitById[id]) hitById[id].classList.toggle("off", !on); });
   $("#maptag").textContent = zoneTag(S.zone);
-  gPais.attr("display", S.zone === "all" ? null : "none"); // con zoom, los rótulos de países se verían enormes
+  gPais.attr("display", S.zone === "all" ? null : "none");
+  const canIn = S.pool.some(isCan);
+  d3.selectAll("#map .insetbg, #map .inset, #map .insetlbl").attr("display", S.zone === "all" || canIn ? null : "none"); // con zoom, los rótulos de países se verían enormes
   zoomTo(S.zone === "all" ? null : S.pool);
 }
 
@@ -502,6 +504,7 @@ function startGame(only) {
     updateProg(); next();
     return;
   }
+  S.gameCromos = []; S.gameShiny = []; S.rwDiploma = null;
   S.duel = S.mode === "duel" && !only;
   if (S.duel) {
     // Reto en familia: 5 provincias para cada uno, por turnos, sin pistas
@@ -789,7 +792,7 @@ function finish() {
   if (perfect) addDiploma(S.lastDiploma);
   $("#endDipBtn").hidden = !perfect; $("#endDipMsg").hidden = !perfect;
   showScreen($("#end"));
-  if (perfect) setTimeout(() => { showDiploma(S.lastDiploma); confetti(200); Sound.great(); say("¡Un diploma para ti, " + KID + "! ¡Toda " + zoneName(S.zone) + " sin fallos! 🎓", "ok", "jump"); }, 1800);
+  if (perfect) { S.rwDiploma = S.lastDiploma; say("¡Un diploma para ti, " + KID + "! ¡Toda " + zoneName(S.zone) + " sin fallos! 🎓", "ok", "jump"); }
   Sound.win(); confetti(160); setTimeout(() => confetti(120, innerWidth * .2, innerHeight * .4), 500); setTimeout(() => confetti(120, innerWidth * .8, innerHeight * .4), 900);
   say(rnd(titles), "cheer", "jump");
   announceUnlocks();
@@ -1012,22 +1015,19 @@ const zoneSel = $("#zone");
 ZONES.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; zoneSel.appendChild(o); });
 function renderHome() {
   $$(".mode").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
-  $$(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.len === S.len));
   zoneSel.value = S.zone;
   // En «Comunidades» solo tiene sentido toda España (dentro de una comunidad la respuesta sería siempre la misma)
   [...zoneSel.options].forEach(o => o.disabled = S.mode === "ccaa" && !["all", "hard"].includes(o.value));
   if (S.mode === "ccaa" && !["all", "hard"].includes(S.zone)) { S.zone = "all"; zoneSel.value = "all"; }
-  $("#lenfield").style.visibility = ["explore", "time", "duel"].includes(S.mode) || S.zone === "hard" ? "hidden" : "visible";
-  $("#rivalfield").hidden = S.mode !== "duel"; $("#lenfield").hidden = S.mode === "duel";
+  $("#rivalfield").hidden = S.mode !== "duel";
   $$("[data-rival]").forEach(b => b.setAttribute("aria-pressed", b.dataset.rival === S.rival));
   renderDuelSub();
   const hardN = hardList(S.mode).length;
   $("#goBtn").disabled = S.zone === "hard" && !hardN;
   $("#goBtn").style.opacity = $("#goBtn").disabled ? .45 : 1;
   const n = poolFor(S.zone).length;
-  $$(".seg button").forEach(b => { if (b.dataset.len !== "all") b.disabled = +b.dataset.len >= n; b.style.opacity = b.disabled ? .35 : 1; });
-  const effLen = S.len !== "all" && +S.len >= n ? "all" : S.len;
-  if (effLen !== S.len) { S.len = effLen; $$(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.len === S.len)); }
+  // Sin «¿Cuántas?»: toda España, 10 provincias; una comunidad, todas las suyas (así puede ganar el diploma)
+  S.len = S.zone === "all" && n > 10 ? "10" : "all";
   const tot = store.get("gabi:totalStars") || 0;
   const best = store.get("gabi:pts:" + S.mode + ":" + S.zone + ":" + S.len);
   const tbest = store.get("gabi:time:" + S.zone);
@@ -1043,7 +1043,6 @@ function showHome() {
   say("¡Hola, " + KID + "! Elige un juego 😊");
 }
 $$(".mode").forEach(b => b.onclick = () => { S.mode = b.dataset.mode; store.set("gabi:mode", S.mode); Sound.tap(); renderHome(); });
-$$(".seg button").forEach(b => b.onclick = () => { S.len = b.dataset.len; store.set("gabi:len", S.len); Sound.tap(); renderHome(); });
 zoneSel.onchange = () => { S.zone = zoneSel.value; store.set("gabi:zone", S.zone); renderHome(); };
 $("#goBtn").onclick = () => { Sound.tap(); startGame(); };
 
@@ -1160,10 +1159,13 @@ albumPaths.on("click", (e, f) => {
 
 // La provincia que muestra el mapa cabe siempre: en móvil la caja del mapa cambia de forma
 let resizeT = null;
-addEventListener("resize", () => {
+const onResize = () => {
   clearTimeout(resizeT);
   resizeT = setTimeout(() => { if (setCanaryLayout() && !S.zoomed) zoomTo(homeView(), true); sizeText(); }, 150);
-});
+};
+addEventListener("resize", onResize);
+// En el iPad, al aparecer o esconderse las barras de Safari cambia el alto visible
+if (window.visualViewport) visualViewport.addEventListener("resize", onResize);
 
 
 // ---------- Pestañas del inicio: Jugar / Mis premios ----------
@@ -1175,6 +1177,14 @@ function setTab(t) {
   if (prizes) { renderPrizes(); store.set("gabi:seenPrizes", totalStars()); $("#newBadge").hidden = true; say("¡Mira todo lo que has conseguido, " + KID + "!", "", "jump"); }
   Sound.tap();
 }
+function setSub(k) {
+  k = k || store.get("gabi:sub") || "cromos"; store.set("gabi:sub", k);
+  $$(".subtabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.sub === k));
+  $$("#panelPrizes .sub").forEach(x => { x.hidden = x.dataset.sub !== k; });
+  const on = document.querySelector('.subtabs button[data-sub="' + k + '"]'); if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest", inline: "center" });
+}
+$$(".subtabs button").forEach(b => b.onclick = () => { Sound.tap(); setSub(b.dataset.sub); });
+setSub();
 $("#tabPlay").onclick = () => setTab("play");
 $("#tabPrizes").onclick = () => setTab("prizes");
 
@@ -1212,18 +1222,38 @@ function newUnlocks(from, to) {
   Object.values(WARDROBE).forEach(d => d.items.forEach(([k, label, cost]) => { if (cost > from && cost <= to) out.push(label); }));
   return out;
 }
+// Al acabar una partida, los premios se enseñan de uno en uno en una pantalla propia
 function announceUnlocks() {
-  setTimeout(checkMedals, 3600);
+  const cards = [];
+  if (S.rwDiploma) { const d = S.rwDiploma; cards.push({ art: "<span class=\"bigemo\">🎓</span>", title: "¡Diploma de " + zoneName(d.zone) + "!", text: "¡Sin ni un solo fallo! Ya está en tu álbum de diplomas.", action: ["Ver mi diploma", () => showDiploma(d)] }); }
+  const gc = S.gameCromos || [], gs = S.gameShiny || [];
+  if (gc.length) cards.push({ art: '<div class="rwcromos">' + gc.slice(0, 8).map(id => cromoMini(id, getCromos()[id])).join("") + "</div>", title: gc.length === 1 ? "¡Cromo nuevo de " + name(gc[0]) + "!" : "¡" + gc.length + " cromos nuevos!", text: "Ya tienes " + cromoN() + " de 52 en tu álbum.", action: ["Ver mi álbum", () => openPrizes("cromos")] });
+  if (gs.length) cards.push({ art: '<div class="rwcromos">' + gs.map(id => cromoMini(id, getCromos()[id])).join("") + "</div>", title: "¡Cromo brillante! ✨", text: listNames(gs) + " ahora brilla en tu álbum.", big: true });
+  (checkMedals("collect") || []).forEach(id => { const m = MEDALS.find(x => x[0] === id); cards.push({ art: '<span class="medal huge">' + m[1] + "</span>", title: "¡Medalla: " + m[2] + "!", text: m[3] + ".", big: true }); });
   const lvl = announceLevel();
-  const tot = totalStars(), before = store.get("gabi:announced") || 0;
-  const got = newUnlocks(before, tot);
+  if (lvl >= 0) cards.push({ art: '<svg class="rwshield" style="color:' + LEVELS[lvl][2] + '" aria-hidden="true"><use href="#i-shield"/></svg>', title: "¡Has subido de nivel!", text: "Ahora eres <b>" + LEVELS[lvl][1] + "</b>.", big: true });
+  const tot = totalStars(), before = store.get("gabi:announced") || 0, got = newUnlocks(before, tot);
   store.set("gabi:announced", tot);
-  if (!got.length) return;
-  setTimeout(() => {
-    say("¡Has desbloqueado " + got.join(", ").toLowerCase() + " para mi armario! Míralo en «Mis premios» 🎁", "cheer", "jump");
-    Sound.great(); confetti(90);
-  }, lvl ? 6500 : 2600);
+  if (got.length) cards.push({ art: '<svg class="rwadela" viewBox="0 0 100 100" aria-hidden="true">' + adelaSVG("happy") + "</svg>", title: "¡Ropa nueva para Adela!", text: "Has desbloqueado: " + got.join(", ").toLowerCase() + ".", action: ["Vestir a Adela", () => openPrizes("adela")] });
+  S.rwDiploma = null; S.gameCromos = []; S.gameShiny = [];
+  if (cards.length) setTimeout(() => showRewards(cards), 1300);
 }
+let RW = [], rwI = 0;
+function showRewards(cards) { RW = cards; rwI = 0; showScreen($("#rewards")); renderReward(); }
+function renderReward() {
+  const c = RW[rwI];
+  $("#rwCount").textContent = RW.length > 1 ? (rwI + 1) + " de " + RW.length : "";
+  $("#rwArt").innerHTML = c.art; $("#rwTitle").innerHTML = c.title; $("#rwText").innerHTML = c.text;
+  const card = $("#rwCard"); card.classList.remove("in"); void card.offsetWidth; card.classList.add("in");
+  $("#rwAction").hidden = !c.action; if (c.action) $("#rwAction").textContent = c.action[0];
+  $("#rwNext").textContent = rwI < RW.length - 1 ? "¡Siguiente!" : "¡Genial!";
+  if (c.big) { Sound.win(); confetti(200); setTimeout(() => confetti(140, innerWidth * .2, innerHeight * .4), 350); setTimeout(() => confetti(140, innerWidth * .8, innerHeight * .4), 700); }
+  else { Sound.great(); confetti(120); }
+  Voice.say(c.title.replace(/<[^>]+>|[¡!✨]/g, ""));
+}
+$("#rwNext").onclick = () => { Sound.tap(); if (++rwI < RW.length) renderReward(); else hideScreen($("#rewards")); };
+$("#rwAction").onclick = () => { const c = RW[rwI]; if (c && c.action) c.action[1](); };
+function openPrizes(sub) { hideScreen($("#rewards")); hideScreen($("#end")); if (typeof showHome === "function") showHome(); setTab("prizes"); setSub(sub); }
 
 // ---------- Copia de seguridad del progreso ----------
 // Safari puede borrar los datos de las webs que no se abren en unos días: pedimos que los conserve y permitimos guardar una copia
@@ -1265,7 +1295,7 @@ function restore(obj) {
   const n = Object.keys(obj.data).length;
   try { Object.entries(obj.data).forEach(([k, v]) => localStorage.setItem(k, v)); } catch (e) { bkMsg("No se pudo restaurar en este navegador.", false); return; }
   outfit = Object.assign({}, outfitDefault, store.get("gabi:outfit") || {}); renderAdela();
-  S.mode = store.get("gabi:mode") || S.mode; S.zone = store.get("gabi:zone") || S.zone; S.len = store.get("gabi:len") || S.len;
+  S.mode = store.get("gabi:mode") || S.mode; S.zone = store.get("gabi:zone") || S.zone; S.len = S.zone === "all" ? "10" : "all";
   renderHome(); renderShelf(); renderAlbum(); renderPrizes();
   $("#restoreBox").hidden = true; bkMsg("¡Copia restaurada! (" + n + " datos del " + new Date(obj.date).toLocaleDateString("es-ES") + ")", true);
   say("¡Ya lo tienes todo otra vez, " + KID + "! 🎉", "cheer", "jump"); confetti(80);
@@ -1325,12 +1355,7 @@ $("#rank").onclick = () => setTab("prizes");
 function announceLevel() {
   const tot = totalStars(), seen = store.get("gabi:rankSeen") ?? levelOf(tot), now = levelOf(tot);
   store.set("gabi:rankSeen", now);
-  if (now <= seen) return false;
-  setTimeout(() => {
-    say("¡HAS SUBIDO DE NIVEL! Ahora eres " + LEVELS[now][1] + ", " + KID + " 🎉", "cheer", "jump");
-    Sound.win(); confetti(200); setTimeout(() => confetti(150, innerWidth * .25, innerHeight * .4), 400); setTimeout(() => confetti(150, innerWidth * .75, innerHeight * .4), 800);
-  }, 2400);
-  return true;
+  return now > seen ? now : -1;
 }
 
 // ---------- Mis viajes: las provincias donde Gabi ha estado de verdad ----------
@@ -1535,11 +1560,11 @@ function gainCromo(id) {
   if (!P[id]) return;
   const c = getCromos();
   if (!c[id]) {
-    c[id] = { d: today(), s: 0 }; store.set("gabi:cromos", c);
+    c[id] = { d: today(), s: 0 }; store.set("gabi:cromos", c); (S.gameCromos = S.gameCromos || []).push(id);
     logDay(x => x.c.push(id));
     showPop(cromoMini(id, c[id]) + "<div><b>¡Cromo nuevo!</b><span>" + name(id) + " · " + Object.keys(c).length + " de 52</span></div>", "k-cromo");
   } else if (!c[id].s && Math.random() < .12) {
-    c[id].s = 1; store.set("gabi:cromos", c);
+    c[id].s = 1; store.set("gabi:cromos", c); (S.gameShiny = S.gameShiny || []).push(id);
     logDay(x => x.b.push(id));
     showPop(cromoMini(id, c[id]) + "<div><b>¡CROMO BRILLANTE! ✨</b><span>" + name(id) + " ahora brilla en tu álbum</span></div>", "k-cromo k-shiny");
     Sound.great();
@@ -1594,10 +1619,10 @@ const getMedals = () => store.get("gabi:medals") || {};
 function checkMedals(silent) {
   const got = getMedals(), fresh = [];
   MEDALS.forEach(([id, , , , test]) => { let ok = false; try { ok = test(); } catch (e) {} if (ok && !got[id]) { got[id] = today(); fresh.push(id); } });
-  if (!fresh.length) return;
+  if (!fresh.length) return [];
   store.set("gabi:medals", got);
-  if (silent) return;
   logDay(x => fresh.forEach(id => x.m.push(id)));
+  if (silent === "collect") { renderMedals(); return fresh; }
   fresh.forEach(id => { const m = MEDALS.find(x => x[0] === id); showPop('<span class="medal big">' + m[1] + "</span><div><b>¡Medalla: " + m[2] + "!</b><span>" + m[3] + "</span></div>", "k-medal"); });
   const m = MEDALS.find(x => x[0] === fresh[0]);
   say("¡Has ganado la medalla «" + m[2] + "», " + KID + "! 🏅 Mírala en «Mis premios»", "cheer", "jump");

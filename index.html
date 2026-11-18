@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="2.0">
+<meta name="app-version" content="2.1">
 <meta name="app-date" content="18/11/2026">
 <title>La aventura de Gabi por España</title>
 <meta name="description" content="Juego para aprender las provincias de España con Adela.">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=2.0">
+<link rel="stylesheet" href="css/style.css?v=2.1">
 </head>
 <body>
 
@@ -166,13 +166,6 @@
           <button data-rival="mama" aria-pressed="false">Mamá</button>
         </div>
       </div>
-      <div class="field" id="lenfield">¿Cuántas?
-        <div class="seg" role="group" aria-label="Número de preguntas">
-          <button data-len="10" aria-pressed="true">10</button>
-          <button data-len="20" aria-pressed="false">20</button>
-          <button data-len="all" aria-pressed="false">Todas</button>
-        </div>
-      </div>
     </div>
       <p class="steplbl"><span>2</span> ¿A qué jugamos?</p>
     <div class="modes" role="group" aria-label="Juego">
@@ -189,17 +182,33 @@
     </div>
     <div class="tabpanel" id="panelPrizes" hidden>
       <div class="totalstars"><svg aria-hidden="true"><use href="#star"/></svg><b id="totalN">0</b><span>estrellas en total</span></div>
-      <div class="levels" id="levels"></div>
+      <nav class="subtabs" role="tablist" aria-label="Mis premios">
+        <button data-sub="cromos" role="tab"><span>🃏</span>Cromos</button>
+        <button data-sub="medallas" role="tab"><span>🏅</span>Medallas</button>
+        <button data-sub="adela" role="tab"><span>👗</span>Adela</button>
+        <button data-sub="diplomas" role="tab"><span>🎓</span>Diplomas</button>
+        <button data-sub="diario" role="tab"><span>📔</span>Diario</button>
+        <button data-sub="viajes" role="tab"><span>🧳</span>Viajes</button>
+        <button data-sub="copia" role="tab"><span>💾</span>Copia</button>
+      </nav>
+      <section class="sub" data-sub="cromos" hidden>
       <div class="cromobox">
         <div class="albumhead"><b>🃏 Álbum de cromos</b><span id="cromoCount"></span></div>
         <div class="cbar"><i id="cromoBar"></i></div>
         <p class="record">Acierta una provincia <b>a la primera</b> y su cromo es tuyo. Si vuelves a acertarla, ¡a veces sale brillante! ✨</p>
         <div class="cromos" id="cromos"></div>
       </div>
+      </section>
+      <section class="sub" data-sub="medallas" hidden>
+      <div class="medalbox"><div class="albumhead"><b>🛡️ Mis niveles</b></div>
+        <div class="levels" id="levels"></div>
+      </div>
       <div class="medalbox">
         <div class="albumhead"><b>🏅 Mis medallas</b><span id="medalCount"></span></div>
         <div class="medals" id="medals"></div>
       </div>
+      </section>
+      <section class="sub" data-sub="adela" hidden>
       <div class="closet">
         <div class="albumhead"><b><svg class="ic" aria-hidden="true"><use href="#i-hanger"/></svg>El armario de Adela</b><span>Gana estrellas y desbloquea ropa</span></div>
         <div class="closetbody">
@@ -207,6 +216,8 @@
           <div class="slots" id="slots"></div>
         </div>
       </div>
+      </section>
+      <section class="sub" data-sub="diplomas" hidden>
     <div class="album" id="album">
       <div class="albumhead"><b><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>Tu álbum de diplomas</b><span id="albumCount"></span></div>
       <svg id="albumMap" role="img" aria-label="Mapa con las zonas en las que ya tienes diploma"></svg>
@@ -214,17 +225,23 @@
     </div>
     <p class="record" id="shelfTitle" hidden>Tus diplomas (tócalos para verlos):</p>
     <div class="shelf" id="shelf"></div>
+      </section>
+      <section class="sub" data-sub="diario" hidden>
       <div class="diary">
         <div class="albumhead"><b>📔 Diario del explorador</b><span>Lo que has conseguido cada día</span></div>
         <p class="record">Estrellas ganadas cada semana:</p>
         <div class="weeks" id="diaryWeeks"></div>
         <div id="diaryDays"></div>
       </div>
+      </section>
+      <section class="sub" data-sub="viajes" hidden>
       <div class="trips">
         <div class="albumhead"><b><svg class="ic" aria-hidden="true"><use href="#i-suitcase"/></svg>Mis viajes</b><span id="tripCount"></span></div>
         <p class="record">Toca las provincias en las que has estado de verdad.</p>
         <svg id="tripMap" role="img" aria-label="Mapa de mis viajes"></svg>
       </div>
+      </section>
+      <section class="sub" data-sub="copia" hidden>
       <div class="backup">
         <div class="albumhead"><b><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg>Copia de seguridad</b><span>Para no perder nunca tus premios</span></div>
         <p class="record">Guarda una copia de vez en cuando. Si cambias de iPad o se borran los datos, la restauras y lo recuperas todo.</p>
@@ -243,6 +260,7 @@
         </div>
         <p class="record" id="bkMsg"></p>
       </div>
+      </section>
     </div>
     <p class="version" id="version"></p>
   </div>
@@ -291,6 +309,15 @@
   </div>
 </div>
 
+<!-- Premios de esta partida, de uno en uno -->
+<div class="screen" id="rewards" hidden role="dialog" aria-labelledby="rwTitle">
+  <div class="sbox rewardbox">
+    <p class="rwhead"><b>Premios de esta partida</b><span id="rwCount"></span></p>
+    <div class="rwcard" id="rwCard"><div class="rwart" id="rwArt"></div><h2 id="rwTitle"></h2><p id="rwText"></p></div>
+    <div class="row"><button class="btn sun" id="rwAction" hidden></button><button class="btn primary" id="rwNext">¡Siguiente!</button></div>
+  </div>
+</div>
+
 <!-- Ficha de un cromo -->
 <div class="screen" id="cromoDlg" hidden role="dialog" aria-label="Cromo">
   <div class="sbox cromodlg">
@@ -324,7 +351,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-composite-projections@1.4.0/d3-composite-projections.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="js/data.js?v=2.0"></script>
-<script src="js/app.js?v=2.0"></script>
+<script src="js/data.js?v=2.1"></script>
+<script src="js/app.js?v=2.1"></script>
 </body>
 </html>

@@ -712,7 +712,7 @@ function onMapClick(id) {
     const alt = P[id][1] ? " (o " + P[id][1] + ")" : "";
     say(name(id) + alt + ". Su capital es " + cap(id) + (cap(id) === name(id) ? ", ¡igual que la provincia!" : "."), "", "jump");
     const trip = getTrips()[id];
-    $("#ifact").hidden = false; $("#ifact").innerHTML = (trip ? '<span class="been">' + ic("pin") + "<b>¡Aquí estuviste" + (trip.note ? " (" + trip.note.replace(/[<>&]/g, "") + ")" : "") + "!</b></span>" + "" : "") +
+    $("#ifact").hidden = false; $("#ifact").innerHTML = (trip ? '<span class="been">' + ic("pin") + "<b>¡Aquí estuviste!</b></span>" + "" : "") +
       ic("bulb") + "<b>¿Sabías que…?</b> " + DATO[id];
     if (trip) say("¡En " + name(id) + " estuviste tú, " + KID + "! Su capital es " + cap(id) + ".", "ok", "jump");
     Voice.say(name(id) + ". Su capital es " + cap(id) + ". " + DATO[id]);
@@ -1323,8 +1323,6 @@ function openTrip(id) {
   $("#tripTitle").textContent = name(id);
   $("#tripToggle").innerHTML = t ? '<svg class="ic"><use href="#i-pin"/></svg>He estado aquí ✓ (toca para quitar)' : '<svg class="ic"><use href="#i-pin"/></svg>Sí, he estado aquí';
   $("#tripToggle").className = "btn " + (t ? "primary" : "sun");
-  $("#tripMore").hidden = !t;
-  $("#tripNote").value = (t && t.note) || "";
   showScreen($("#tripDlg"));
 }
 tripPaths.on("click", (e, f) => { Sound.tap(); openTrip(f.id); });
@@ -1332,10 +1330,9 @@ tripCM.on("click", (e, f) => { Sound.tap(); openTrip(f.id); });
 $("#tripToggle").onclick = () => {
   const t = getTrips();
   if (t[tripId]) delete t[tripId];
-  else { t[tripId] = { note: "" }; Sound.ok(); say("¡Qué bien, " + KID + "! Has estado en " + name(tripId) + ". " + DATO[tripId], "ok", "jump"); }
+  else { t[tripId] = {}; Sound.ok(); say("¡Qué bien, " + KID + "! Has estado en " + name(tripId) + ". " + DATO[tripId], "ok", "jump"); }
   setTrips(t); renderTrips(); openTrip(tripId);
 };
-$("#tripNote").oninput = () => { const t = getTrips(); if (t[tripId]) { t[tripId].note = $("#tripNote").value; setTrips(t); } };
 $("#tripClose").onclick = () => hideScreen($("#tripDlg"));
 
 // En el mapa del juego: chinchetas en Explorar
@@ -1370,8 +1367,8 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 setInterval(checkUpdate, 10 * 60 * 1000);
 setTimeout(checkUpdate, 3000);
 if (!ZONES.some(z => z[0] === S.zone)) S.zone = "all";
-// Las fotos de viajes se retiraron en la v1.7: se borran las que hubiera guardadas
-(() => { const t = getTrips(); let ch = false; Object.values(t).forEach(v => { if (v && v.photo) { delete v.photo; ch = true; } }); if (ch) setTrips(t); })();
+// Las fotos (v1.7) y las fechas (v1.8) de los viajes se retiraron: se borran las que hubiera guardadas
+(() => { const t = getTrips(); let ch = false; Object.values(t).forEach(v => { if (v && (v.photo || v.note !== undefined)) { delete v.photo; delete v.note; ch = true; } }); if (ch) setTrips(t); })();
 // Primera vez con niveles/armario: se parte del total actual para no anunciar como «nuevo» lo que ya tenía
 if (store.get("gabi:rankSeen") == null) store.set("gabi:rankSeen", levelOf(totalStars()));
 if (store.get("gabi:announced") == null) store.set("gabi:announced", totalStars());

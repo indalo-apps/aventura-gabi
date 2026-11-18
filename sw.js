@@ -1,7 +1,7 @@
 // Service worker de La aventura de Gabi: permite jugar sin conexión.
-// Versión 1.6: al subir una versión nueva cambia el nombre de la caché y se limpia la anterior.
-const CACHE = "aventura-gabi-1.6";
-const PRECACHE = ["./", "index.html", "css/style.css?v=1.6", "js/data.js?v=1.6", "js/app.js?v=1.6", "manifest.webmanifest", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js", "https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js", "https://cdn.jsdelivr.net/npm/d3-composite-projections@1.4.0/d3-composite-projections.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js", "https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap"];
+// Versión 1.7: al subir una versión nueva cambia el nombre de la caché y se limpia la anterior.
+const CACHE = "aventura-gabi-1.7";
+const PRECACHE = ["./", "index.html", "css/style.css?v=1.7", "js/data.js?v=1.7", "js/app.js?v=1.7", "manifest.webmanifest", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js", "https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js", "https://cdn.jsdelivr.net/npm/d3-composite-projections@1.4.0/d3-composite-projections.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js", "https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(PRECACHE.map(u =>

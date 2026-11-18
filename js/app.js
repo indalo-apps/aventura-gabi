@@ -712,7 +712,7 @@ function onMapClick(id) {
     const alt = P[id][1] ? " (o " + P[id][1] + ")" : "";
     say(name(id) + alt + ". Su capital es " + cap(id) + (cap(id) === name(id) ? ", ¡igual que la provincia!" : "."), "", "jump");
     const trip = getTrips()[id];
-    $("#ifact").hidden = false; $("#ifact").innerHTML = (trip ? '<span class="been">' + ic("pin") + "<b>¡Aquí estuviste" + (trip.note ? " (" + trip.note.replace(/[<>&]/g, "") + ")" : "") + "!</b></span>" + (trip.photo ? '<img class="tripthumb" src="' + trip.photo + '" alt="Foto del viaje">' : "") : "") +
+    $("#ifact").hidden = false; $("#ifact").innerHTML = (trip ? '<span class="been">' + ic("pin") + "<b>¡Aquí estuviste" + (trip.note ? " (" + trip.note.replace(/[<>&]/g, "") + ")" : "") + "!</b></span>" + "" : "") +
       ic("bulb") + "<b>¿Sabías que…?</b> " + DATO[id];
     if (trip) say("¡En " + name(id) + " estuviste tú, " + KID + "! Su capital es " + cap(id) + ".", "ok", "jump");
     Voice.say(name(id) + ". Su capital es " + cap(id) + ". " + DATO[id]);
@@ -1296,7 +1296,6 @@ function announceLevel() {
 }
 
 // ---------- Mis viajes: las provincias donde Gabi ha estado de verdad ----------
-// Las fotos se quedan solo en este aparato (no se suben a ningún sitio); entran en la copia de seguridad
 const getTrips = () => store.get("gabi:trips") || {};
 const setTrips = t => { try { localStorage.setItem("gabi:trips", JSON.stringify(t)); return true; } catch (e) { return false; } };
 const visited = id => !!getTrips()[id];
@@ -1326,8 +1325,6 @@ function openTrip(id) {
   $("#tripToggle").className = "btn " + (t ? "primary" : "sun");
   $("#tripMore").hidden = !t;
   $("#tripNote").value = (t && t.note) || "";
-  const ph = t && t.photo; $("#tripPhoto").hidden = !ph; if (ph) $("#tripPhoto").src = ph;
-  $("#tripPhotoDel").hidden = !ph; $("#tripFileLbl").textContent = ph ? "Cambiar foto" : "Añadir foto";
   showScreen($("#tripDlg"));
 }
 tripPaths.on("click", (e, f) => { Sound.tap(); openTrip(f.id); });
@@ -1339,30 +1336,6 @@ $("#tripToggle").onclick = () => {
   setTrips(t); renderTrips(); openTrip(tripId);
 };
 $("#tripNote").oninput = () => { const t = getTrips(); if (t[tripId]) { t[tripId].note = $("#tripNote").value; setTrips(t); } };
-$("#tripPhotoDel").onclick = () => { const t = getTrips(); if (t[tripId]) { delete t[tripId].photo; setTrips(t); openTrip(tripId); } };
-$("#tripFile").onchange = async e => {
-  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
-  try {
-    const url = await shrinkPhoto(f, 640, .72);
-    const t = getTrips(); if (!t[tripId]) return;
-    t[tripId].photo = url;
-    if (!setTrips(t)) { alertTrip("No cabe más fotos en este aparato. Quita alguna antigua."); return; }
-    openTrip(tripId); renderTrips(); Sound.ok();
-  } catch (er) { alertTrip("No he podido abrir esa foto."); }
-};
-function alertTrip(t) { say(t, "bad", "sad"); }
-function shrinkPhoto(file, max, q) {
-  return new Promise((res, rej) => {
-    const im = new Image(), u = URL.createObjectURL(file);
-    im.onload = () => {
-      const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement("canvas");
-      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
-      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
-      res(c.toDataURL("image/jpeg", q));
-    };
-    im.onerror = rej; im.src = u;
-  });
-}
 $("#tripClose").onclick = () => hideScreen($("#tripDlg"));
 
 // En el mapa del juego: chinchetas en Explorar
@@ -1397,6 +1370,8 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 setInterval(checkUpdate, 10 * 60 * 1000);
 setTimeout(checkUpdate, 3000);
 if (!ZONES.some(z => z[0] === S.zone)) S.zone = "all";
+// Las fotos de viajes se retiraron en la v1.7: se borran las que hubiera guardadas
+(() => { const t = getTrips(); let ch = false; Object.values(t).forEach(v => { if (v && v.photo) { delete v.photo; ch = true; } }); if (ch) setTrips(t); })();
 // Primera vez con niveles/armario: se parte del total actual para no anunciar como «nuevo» lo que ya tenía
 if (store.get("gabi:rankSeen") == null) store.set("gabi:rankSeen", levelOf(totalStars()));
 if (store.get("gabi:announced") == null) store.set("gabi:announced", totalStars());

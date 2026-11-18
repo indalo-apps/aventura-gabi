@@ -347,3 +347,11 @@ body[data-mode="explore"] .explore-layer { display: inline; }
 .tripbox input { width: 100%; font: 600 1.1rem var(--f); padding: 10px 12px; border-radius: 14px; border: 3px solid #e2dbff; -webkit-user-select: text; user-select: text; }
 .fact .been { display: block; color: #10804f; margin-bottom: 4px; }
 @media (max-width: 880px) { .levels { grid-template-columns: repeat(2, 1fr); } #tripMap { height: 240px; } .rank { max-width: none; } }
+
+/* ===== v1.9: reto en familia ===== */
+.turn { display: inline-block; padding: 2px 10px; border-radius: 99px; color: #fff; font-weight: 700; margin-right: 6px; background: var(--accent); }
+#qcard[data-turn="rival"] .turn { background: var(--orange); }
+#qcard[data-turn="rival"] .qname { background: var(--orange); box-shadow: 0 5px 0 #d96a1f; }
+body:not([data-mode="duel"]) #qcard .turn { display: none; }
+.pts .pg { color: var(--accent); } .pts .pr { color: var(--orange); }
+.prov.rival, .cm.rival { fill: #ffd2ad !important; }

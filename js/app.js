@@ -352,8 +352,8 @@ function ring(id) {
   gFx.append("circle").attr("class", "ring").attr("cx", c[0]).attr("cy", c[1]).attr("r", r);
 }
 function clearMarks() {
-  ["done", "done2", "target", "flash-bad", "flash-ok", "reveal", "sel", "off", "hint", "r-ok", "r-meh", "r-bad"].forEach(c => provPaths.classed(c, false));
-  cmDots.classed("done done2 target flash-bad flash-ok reveal sel off hint r-ok r-meh r-bad", false); $("#legend").hidden = true; cmHit.classed("off", false);
+  ["done", "done2", "rival", "target", "flash-bad", "flash-ok", "reveal", "sel", "off", "hint", "r-ok", "r-meh", "r-bad"].forEach(c => provPaths.classed(c, false));
+  cmDots.classed("done done2 rival target flash-bad flash-ok reveal sel off hint r-ok r-meh r-bad", false); $("#legend").hidden = true; cmHit.classed("off", false);
   gFx.selectAll("*").remove(); gLbl.selectAll("*").remove(); gDone.selectAll("*").remove();
 }
 
@@ -442,7 +442,7 @@ function tick() {
 const S = { mode: store.get("gabi:mode") || "find", zone: store.get("gabi:zone") || "all", len: store.get("gabi:len") || "10",
   pool: [], queue: [], total: 0, done: 0, cur: null, miss: 0, stars: 0, streak: 0, best: 0, first: 0, results: {}, locked: false, opts: [] };
 const DATO = {"01": "Su capital, Vitoria-Gasteiz, es también la capital del País Vasco.", "02": "Es famosa desde hace siglos por sus navajas y cuchillos.", "03": "Frente a su costa está Tabarca, la única isla habitada de la Comunitat Valenciana.", "04": "Tiene el desierto de Tabernas, donde se han rodado muchas películas del Oeste.", "05": "Su muralla medieval rodea toda la ciudad antigua y es una de las mejor conservadas del mundo.", "06": "Es la provincia más grande de España.", "07": "Está formada por islas: Mallorca, Menorca, Ibiza y Formentera son las más grandes.", "08": "Allí está la Sagrada Familia, el templo de Gaudí que lleva más de 140 años construyéndose.", "09": "En la sierra de Atapuerca se han encontrado algunos de los restos humanos más antiguos de Europa.", "10": "Tiene el Parque Nacional de Monfragüe, famoso por sus buitres, águilas y cigüeñas negras.", "11": "Su capital es una de las ciudades más antiguas de Europa occidental: la fundaron los fenicios hace unos 3.000 años.", "12": "Frente a su costa están las islas Columbretes, que son restos de antiguos volcanes.", "13": "Es tierra de Don Quijote: en Campo de Criptana están sus famosos molinos de viento.", "14": "Tiene la Mezquita-Catedral, con un bosque de cientos de columnas y arcos rojos y blancos.", "15": "Tiene la Torre de Hércules, el faro romano más antiguo del mundo que sigue funcionando.", "16": "Sus Casas Colgadas parecen flotar sobre un precipicio.", "17": "En el cabo de Creus está el punto más al este de la península ibérica.", "18": "Tiene la Alhambra y el Mulhacén, el pico más alto de la península ibérica.", "19": "Tiene pueblos de arquitectura negra, con casas hechas de pizarra oscura.", "20": "Es la provincia más pequeña de España.", "21": "Desde el puerto de Palos salió Cristóbal Colón en 1492 rumbo a América.", "22": "Tiene el Aneto, el pico más alto de los Pirineos.", "23": "Tiene tantísimos olivos que es uno de los lugares del mundo donde más aceite de oliva se produce.", "24": "Su catedral es famosa por sus enormes vidrieras de colores.", "25": "Tiene el Parque Nacional de Aigüestortes, el único parque nacional de Cataluña.", "26": "En San Millán de la Cogolla se escribieron algunas de las primeras palabras en español que se conocen.", "27": "Su muralla romana es la única del mundo que se conserva entera.", "28": "En la Puerta del Sol está el kilómetro cero, desde donde se miden las carreteras de España.", "29": "Allí nació el famoso pintor Pablo Picasso.", "30": "Tiene el Mar Menor, una gran laguna de agua salada junto al Mediterráneo.", "31": "En Pamplona se celebran los Sanfermines cada mes de julio.", "32": "Es famosa por sus aguas termales: hay fuentes de agua caliente en plena ciudad.", "33": "Tiene parte de los Picos de Europa y es famosa por la sidra.", "34": "Por ella pasa el Canal de Castilla, por el que antes navegaban barcas cargadas de trigo.", "35": "Incluye Gran Canaria, Lanzarote y Fuerteventura; en Lanzarote hay paisajes volcánicos que parecen de otro planeta.", "36": "Frente a su costa están las islas Cíes, con playas de arena blanca.", "37": "Tiene una de las universidades más antiguas de Europa, y en su fachada se esconde una rana que todo el mundo intenta encontrar.", "38": "En Tenerife está el Teide, el pico más alto de España.", "39": "En la cueva de Altamira hay pinturas de bisontes hechas hace miles de años.", "40": "Tiene un acueducto romano construido sin cemento: sus piedras se sujetan solas.", "41": "Es la capital de Andalucía y tiene la Giralda, la torre de su catedral.", "42": "En sus Picos de Urbión nace el río Duero.", "43": "Tiene un anfiteatro romano junto al mar y el delta del Ebro, lleno de arrozales y aves.", "44": "Es famosa por los Amantes de Teruel y tiene Dinópolis, un parque de dinosaurios.", "45": "La llaman «la ciudad de las tres culturas» porque allí convivieron cristianos, musulmanes y judíos.", "46": "Es la tierra de la paella y de las Fallas, que se queman cada mes de marzo.", "47": "Su capital fue capital de España durante unos años, a principios del siglo XVII.", "48": "Tiene el Museo Guggenheim de Bilbao, forrado de titanio, y el Puente de Bizkaia, el puente transbordador más antiguo del mundo.", "49": "Su capital es conocida como «la ciudad del románico» por sus muchas iglesias antiguas.", "50": "Tiene la basílica del Pilar, a orillas del Ebro, el río más caudaloso de España.", "51": "Está en el norte de África, frente al estrecho de Gibraltar.", "52": "Está en el norte de África y tiene muchísimos edificios modernistas."};
-const MODE_TXT = { find: "¿Dónde está?", name: "¿Cuál es?", cap: "Capitales", ccaa: "Comunidades", time: "Contrarreloj", explore: "Explorar" };
+const MODE_TXT = { duel: "Reta a papá o mamá", find: "¿Dónde está?", name: "¿Cuál es?", cap: "Capitales", ccaa: "Comunidades", time: "Contrarreloj", explore: "Explorar" };
 // Comunidades de una sola provincia (más Ceuta y Melilla): juntas forman una zona propia
 const UNI = ALL.filter(id => ALL.filter(x => P[x][3] === P[id][3]).length === 1);
 // "Las que más me cuestan": se recuerdan los fallos de todas las partidas, por juego
@@ -500,6 +500,18 @@ function startGame(only) {
     updateProg(); next();
     return;
   }
+  S.duel = S.mode === "duel" && !only;
+  if (S.duel) {
+    // Reto en familia: 5 provincias para cada uno, por turnos, sin pistas
+    // Siempre 10 preguntas; en zonas pequeñas se repiten provincias
+    let dq = []; while (dq.length < 10) dq = dq.concat(shuffle(S.pool.slice()));
+    const R = RIVALS[S.rival] || RIVALS.papa;
+    Object.assign(S, { queue: dq.slice(0, 10), total: 10, done: 0, stars: 0, streak: 0, best: 0, first: 0, results: {}, review: false, score: 0, dpts: { gabi: 0, rival: 0 } });
+    $("#starN").textContent = "0"; $("#helpBtn").hidden = true;
+    say("¡Empieza el reto: " + KID + " contra " + R.name + "! Cinco provincias cada uno. ¡Que gane el mejor! 🏆", "", "jump");
+    updateProg(); next();
+    return;
+  }
   let q = shuffle(only ? only.slice() : S.pool.slice());
   if (!only && S.len !== "all" && S.zone !== "hard") q = q.slice(0, +S.len);
   Object.assign(S, { queue: q, total: q.length, done: 0, stars: 0, streak: 0, best: 0, first: 0, results: {}, review: !!only, score: 0 });
@@ -523,7 +535,14 @@ function next() {
   const id = S.cur, q = $("#qname");
   q.classList.remove("swap"); void q.offsetWidth; q.classList.add("swap");
   $("#hearBtn").hidden = !Voice.can() || S.mode === "name" || S.mode === "ccaa";
-  if (S.mode === "find" || S.mode === "time") {
+  if (S.duel) {
+    S.turn = S.done % 2 === 0 ? "gabi" : "rival";
+    const R = RIVALS[S.rival] || RIVALS.papa, who = S.turn === "gabi" ? KID.toUpperCase() : R.name.toUpperCase();
+    $("#qcard").dataset.turn = S.turn;
+    $("#qlabel").innerHTML = '<span class="turn">Turno de ' + who + '</span> ¿Dónde está…?';
+    q.textContent = name(id); $("#qsub").textContent = ""; $("#opts").hidden = true;
+    if (S.done > 0) say(S.turn === "gabi" ? rnd(["¡Te toca, " + KID + "! 💪", "¡Tu turno, " + KID + "! ¡A por ella!", KID + ", ¡demuéstrale lo que sabes!"]) : rnd(["¡Te toca, " + R.name + "! A ver si sabes tanto como " + KID + "…", R.name + ", ¡tu turno! " + KID + " te está mirando 👀", "¡Vamos, " + R.name + "! ¿Podrás con esta?"]), "", "jump");
+  } else if (S.mode === "find" || S.mode === "time") {
     $("#qlabel").textContent = "¿Dónde está…?";
     q.textContent = name(id);
     $("#qsub").textContent = P[id][1] ? "También se llama " + P[id][1] : "";
@@ -572,6 +591,13 @@ function renderTries() {
   $$("#tries svg").forEach((s, i) => s.classList.toggle("lost", i >= left));
 }
 function updateProg() {
+  if (S.duel) {
+    const R = RIVALS[S.rival] || RIVALS.papa;
+    $("#count").textContent = "Ronda " + Math.min(5, Math.floor(S.done / 2) + 1) + " de " + S.total / 2;
+    $("#pts").innerHTML = '<b class="pg">' + KID + " " + S.dpts.gabi + '</b> – <b class="pr">' + S.dpts.rival + " " + R.name + "</b>";
+    $("#barfill").style.width = (S.total ? S.done / S.total * 100 : 0) + "%";
+    $("#streak").innerHTML = ""; return;
+  }
   if (S.timed) { $("#count").textContent = "Encontradas: " + S.found; $("#streak").innerHTML = ic("flame") + "<i>" + S.streak + "</i>"; $("#pts").textContent = ""; return; }
   $("#count").textContent = (S.review ? "Repaso: " : "") + S.done + " de " + S.total;
   $("#barfill").style.width = (S.total ? S.done / S.total * 100 : 0) + "%";
@@ -592,6 +618,7 @@ function screenPt(id) {
 function answer(id, btn) {
   if (S.locked || !S.cur) return;
   if (S.timed) return answerTimed(id);
+  if (S.duel) return answerDuel(id);
   const target = S.cur;
   if (id === target) {
     S.locked = true;
@@ -718,13 +745,14 @@ function onMapClick(id) {
     Voice.say(name(id) + ". Su capital es " + cap(id) + ". " + DATO[id]);
     return;
   }
-  if (S.mode === "find" || S.mode === "time") answer(id);
+  if (S.mode === "find" || S.mode === "time" || S.mode === "duel") answer(id);
 }
 provPaths.on("click", (e, f) => onMapClick(f.id));
 cmHit.on("click", (e, f) => onMapClick(f.id));
 
 // ---------- Final ----------
 function finish() {
+  if (S.duel) return finishDuel();
   S.cur = null;
   const max = S.total * 3, ratio = max ? S.stars / max : 0;
   const big = ratio >= .9 ? 3 : ratio >= .65 ? 2 : 1;
@@ -985,7 +1013,10 @@ function renderHome() {
   // En «Comunidades» solo tiene sentido toda España (dentro de una comunidad la respuesta sería siempre la misma)
   [...zoneSel.options].forEach(o => o.disabled = S.mode === "ccaa" && !["all", "hard"].includes(o.value));
   if (S.mode === "ccaa" && !["all", "hard"].includes(S.zone)) { S.zone = "all"; zoneSel.value = "all"; }
-  $("#lenfield").style.visibility = ["explore", "time"].includes(S.mode) || S.zone === "hard" ? "hidden" : "visible";
+  $("#lenfield").style.visibility = ["explore", "time", "duel"].includes(S.mode) || S.zone === "hard" ? "hidden" : "visible";
+  $("#rivalfield").hidden = S.mode !== "duel"; $("#lenfield").hidden = S.mode === "duel";
+  $$("[data-rival]").forEach(b => b.setAttribute("aria-pressed", b.dataset.rival === S.rival));
+  renderDuelSub();
   const hardN = hardList(S.mode).length;
   $("#goBtn").disabled = S.zone === "hard" && !hardN;
   $("#goBtn").style.opacity = $("#goBtn").disabled ? .45 : 1;
@@ -1346,6 +1377,62 @@ function renderTripPinsOnMap() {
     const c = centroidOf(id), s = 22 * k;
     gTrips.append("use").attr("href", "#i-pin").attr("x", c[0] + 4 * k).attr("y", c[1] - s - 2 * k).attr("width", s).attr("height", s);
   });
+}
+
+// ---------- Reta a papá o mamá ----------
+const RIVALS = { papa: { name: "Papá" }, mama: { name: "Mamá" } };
+S.rival = store.get("gabi:rival") || "papa";
+$$("[data-rival]").forEach(b => b.onclick = () => { S.rival = b.dataset.rival; store.set("gabi:rival", S.rival); Sound.tap(); renderHome(); });
+const duelRec = r => store.get("gabi:duel:" + r) || { g: 0, r: 0, t: 0 };
+function renderDuelSub() {
+  const R = RIVALS[S.rival] || RIVALS.papa, d = duelRec(S.rival);
+  $("#duelSub").textContent = d.g + d.r + d.t ? "Marcador contra " + R.name.toLowerCase() + ": " + KID + " " + d.g + " – " + d.r + " " + R.name : "Por turnos en el mismo iPad: ¿quién sabe más?";
+}
+function answerDuel(id) {
+  const target = S.cur, R = RIVALS[S.rival] || RIVALS.papa, me = S.turn === "gabi";
+  if (id === target) {
+    S.locked = true;
+    const pts = S.miss === 0 ? 2 : 1;
+    S.dpts[S.turn] += pts; S.done++;
+    if (me) { addStars(S.miss === 0 ? 3 : 2); bumpStat(target, S.miss); }
+    cls(target, "flash-ok"); ripple(target); setTimeout(() => { cls(target, "flash-ok", false); cls(target, "done", me); cls(target, "rival", !me); }, 700);
+    toast(target, "✓ " + name(target) + " <small>+" + pts + "</small>", "ok", 1300);
+    Sound.ok(); const [x, y] = screenPt(target); confetti(me ? 60 : 25, x, y);
+    say(me ? rnd(["¡Punto para " + KID + "! 🎉", "¡Toma ya, " + KID + "!", "¡Muy bien, " + KID + "! " + R.name + " está temblando 😄"]) : rnd(["Bien, " + R.name + "… pero " + KID + " no se rinde", "Punto para " + R.name + ". ¡Venga, " + KID + ", que tú puedes!", "Vaya, " + R.name + " también sabe…"]), "ok", "jump");
+    Voice.say(name(target)); updateProg();
+    setTimeout(next, 1300);
+    return;
+  }
+  S.miss++; Sound.bad();
+  cls(id, "flash-bad"); toast(id, "✗ Esa es " + name(id), "bad", 1300); setTimeout(() => cls(id, "flash-bad", false), 900); shake($("#qcard"));
+  if (S.miss < 2) { say(me ? "¡Casi, " + KID + "! Tienes otra oportunidad" : "¡Fallo de " + R.name + "! Le queda otro intento 😄", "bad", me ? "sad" : "jump"); return; }
+  // Segundo fallo: se enseña y pasa el turno sin puntos
+  S.locked = true; S.done++; updateProg();
+  cls(target, "reveal"); ring(target);
+  say("¡Era " + name(target) + "! Sin punto esta vez. ¡Siguiente turno!", "", "jump");
+  setTimeout(() => { cls(target, "reveal", false); next(); }, 2200);
+}
+function finishDuel() {
+  S.cur = null;
+  const R = RIVALS[S.rival] || RIVALS.papa, g = S.dpts.gabi, r = S.dpts.rival, d = duelRec(S.rival);
+  const win = g > r ? "gabi" : r > g ? "rival" : "tie";
+  if (win === "gabi") d.g++; else if (win === "rival") d.r++; else d.t++;
+  store.set("gabi:duel:" + S.rival, d);
+  store.set("gabi:totalStars", (store.get("gabi:totalStars") || 0) + S.stars);
+  $("#endDipBtn").hidden = true; $("#endDipMsg").hidden = true; $("#reviewWrap").hidden = true; $("#reviewBtn").hidden = true; $("#mapBtn").hidden = true;
+  $("#bigstars").innerHTML = win === "gabi" ? '<svg><use href="#star"/></svg>'.repeat(3) : "";
+  $("#endTitle").textContent = win === "gabi" ? "¡GANA " + KID.toUpperCase() + "! 🏆" : win === "rival" ? "¡Gana " + R.name + "!" : "¡Empate! 🤝";
+  $("#endMsg").textContent = win === "gabi" ? "¡Has ganado a " + R.name.toLowerCase() + ", " + KID + "! Eres un auténtico explorador." :
+    win === "rival" ? "Esta vez ha ganado " + R.name.toLowerCase() + "… ¡pero la revancha es tuya, " + KID + "!" : "¡Los dos sabéis muchísimo! Habrá que desempatar.";
+  $("#eStars").textContent = g; $("#eStarsL").textContent = KID;
+  $("#eFirst").textContent = r; $("#eFirstL").textContent = R.name;
+  $("#eStreak").textContent = d.g + "–" + d.r; $("#eStreakL").textContent = "marcador total";
+  $("#endRecord").textContent = "Marcador de siempre: " + KID + " " + d.g + " – " + d.r + " " + R.name + (d.t ? " (" + d.t + (d.t === 1 ? " empate)" : " empates)") : "");
+  showScreen($("#end"));
+  if (win === "gabi") { Sound.win(); confetti(220); setTimeout(() => confetti(150, innerWidth * .2, innerHeight * .4), 500); setTimeout(() => confetti(150, innerWidth * .8, innerHeight * .4), 900); say("¡¡" + KID.toUpperCase() + " GANA!! ¡Campeón! 🏆", "cheer", "jump"); }
+  else if (win === "tie") { Sound.great(); confetti(100); say("¡Empate! ¡Qué igualado! 🤝", "ok", "jump"); }
+  else { Sound.ok(); say("¡Gana " + R.name + "! Pero " + KID + " ha jugado genial. ¿Revancha? 💪", "", "jump"); }
+  announceUnlocks();
 }
 
 // ---------- Aviso de versión nueva (solo publicada en una web, p. ej. Netlify) ----------

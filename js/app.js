@@ -1640,6 +1640,7 @@ function renderMedals() {
 // ---------- Actualización automática y novedades ----------
 // Lo que trae cada versión, contado para Gabi (lo más nuevo, arriba)
 const NEWS = [
+  ["2.3", ["🛂 Nuevo icono: ¡un sello de pasaporte con tu nombre! (Para verlo, quita el icono de la pantalla de inicio y vuelve a añadirlo)"]],
   ["2.2", ["🔄 El juego se actualiza solo y te cuenta las novedades, ¡como ahora!"]],
   ["2.1", ["🗂️ «Mis premios» ahora tiene pestañas: Cromos, Medallas, Adela, Diplomas, Diario…",
            "🎁 Al acabar una partida, los premios salen de uno en uno",

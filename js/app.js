@@ -20,7 +20,7 @@ const WARDROBE = {
   hair: { label: "Pelo", items: [
     ["castano", "Castaño", 0], ["rubio", "Rubio", 35], ["pelirrojo", "Pelirrojo", 60], ["negro", "Negro", 80], ["rosa", "Rosa", 180], ["azul", "Azul", 250]] },
   extra: { label: "Complemento", items: [
-    ["nada", "Nada", 0], ["bufanda", "Bufanda", 45], ["medalla", "Medalla", 120], ["mochila", "Mochila", 160]] },
+    ["nada", "Nada", 0], ["bufanda", "Bufanda", 45], ["balon", "Balón de baloncesto", 20], ["medalla", "Medalla", 120], ["mochila", "Mochila", 160]] },
 };
 const JACKETS = { morada: ["#7b5cff", "#5a3fe0"], verde: ["#22b573", "#168a56"], roja: ["#e0485e", "#b8304a"], azul: ["#3f8cff", "#2563c9"], naranja: ["#ff8a3d", "#d96a1f"], dorada: ["#ffc93c", "#d99e00"] };
 const HAIRS = { castano: ["#6b3a20", "#d99a5b"], rubio: ["#e8b84a", "#fff0a8"], pelirrojo: ["#c4541f", "#ff9a5c"], negro: ["#2a2230", "#6b5f7a"], rosa: ["#ff7eb6", "#ffd0e6"], azul: ["#3f6fd9", "#9fc4ff"] };
@@ -57,6 +57,7 @@ function adelaSVG(mood, o) {
   // bufanda / medalla (sobre el cuello)
   if (o.extra === "bufanda") s += `<path d="M34 74 q16 8 32 0 l0 6 q-16 8 -32 0z" fill="#ff5d73" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/><path d="M58 79 l3 14 l6 -2 l-3 -13z" fill="#ff5d73" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/><path d="M40 77.5 v5 M46 79 v5 M52 79 v5" stroke="#fff" stroke-width="1.6"/>`;
   if (o.extra === "medalla") s += `<path d="M44 77 l6 13 l6 -13" fill="none" stroke="#3f8cff" stroke-width="3"/><circle cx="50" cy="91" r="5" fill="#ffc93c" stroke="${ink}" stroke-width="1.8"/><path d="M50 88.3 l.9 1.8 2 .3 -1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="#fff"/>`;
+  if (o.extra === "balon") s += `<g transform="translate(82 86)"><circle r="11" fill="#ff8a3d" stroke="${ink}" stroke-width="2"/><path d="M-11 0h22M0-11v22M-7.5-8a11 11 0 0 1 0 16M7.5-8a11 11 0 0 0 0 16" fill="none" stroke="${ink}" stroke-width="1.5"/></g>`;
   // cara y flequillo
   s += `<circle cx="50" cy="54" r="21" fill="#ffe0c4" stroke="${ink}" stroke-width="2.2"/>` +
        `<path d="M29 52 q0 -22 22 -22 q20 0 22 20 q-14 -10 -26 -6 q-10 3 -18 8z" fill="${hc}" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/>` +
@@ -127,7 +128,7 @@ const MSG = {
   ok3: ["¡Ya la tienes! Esta la repasamos luego", "¡Bien! Ahora ya sabes dónde está", "¡Conseguido! Poco a poco se aprende"],
   bad: ["¡Casi, {n}! Prueba otra vez", "Uy, esa no es. ¡Tú puedes!", "No pasa nada, {n}. ¡Otra vez!", "¡Inténtalo de nuevo, que estás cerca!", "Esa no… ¡pero no te rindas!"],
   hint: ["Te doy una pista, {n} 👀", "¡Pista para ti, {n}! 👀", "¡Te ayudo, {n}!"],
-  streak: { 3: "¡3 seguidas, {n}! 🔥", 5: "¡5 seguidas! ¡Estás que te sales! 🔥🔥", 8: "¡8 seguidas! ¡Imparable, {n}! 🚀", 12: "¡12 seguidas! ¡Eres una máquina! 🏆", 20: "¡20 seguidas! ¡Leyenda total! 👑" },
+  streak: { 3: "¡TRIPLE! 🏀 ¡3 seguidas, {n}!", 5: "¡5 seguidas! ¡Quinteto inicial completo! 🏀🔥", 8: "¡8 seguidas! ¡Eso ha sido un MATE, {n}! 🏀🚀", 12: "¡12 seguidas! ¡Eres el MVP del partido! 🏆", 20: "¡20 seguidas! ¡Leyenda total! 👑" },
   half: "¡Ya vas por la mitad, {n}! Sigue así 💪",
   last: "¡La última! ¡A por ella, {n}!",
 };
@@ -452,6 +453,7 @@ function bumpStat(id, miss) {
   const st = getStats(S.mode), v = st[id] || 0;
   st[id] = miss > 0 ? Math.min(6, v + Math.min(miss, 3)) : Math.max(0, v - 1);
   store.set(statKey(S.mode), st);
+  if (!miss && !S.review) gainCromo(id);
 }
 const hardList = m => { const st = getStats(m); return Object.keys(st).filter(id => st[id] > 0 && P[id]).sort((a, b) => st[b] - st[a]).slice(0, 12); };
 const poolFor = z => z === "all" ? ALL.slice() : z === "uni" ? UNI.slice() : z === "hard" ? hardList(S.mode) : ALL.filter(id => P[id][3] === z);
@@ -740,7 +742,7 @@ function onMapClick(id) {
     say(name(id) + alt + ". Su capital es " + cap(id) + (cap(id) === name(id) ? ", ¡igual que la provincia!" : "."), "", "jump");
     const trip = getTrips()[id];
     $("#ifact").hidden = false; $("#ifact").innerHTML = (trip ? '<span class="been">' + ic("pin") + "<b>¡Aquí estuviste!</b></span>" + "" : "") +
-      ic("bulb") + "<b>¿Sabías que…?</b> " + DATO[id];
+      ic("bulb") + "<b>¿Sabías que…?</b> " + DATO[id] + (BASKET[id] ? '<br><span class="bb">🏀</span><b>Baloncesto:</b> ' + BASKET[id] : "");
     if (trip) say("¡En " + name(id) + " estuviste tú, " + KID + "! Su capital es " + cap(id) + ".", "ok", "jump");
     Voice.say(name(id) + ". Su capital es " + cap(id) + ". " + DATO[id]);
     return;
@@ -779,6 +781,7 @@ function finish() {
     $("#endRecord").innerHTML = S.score > prev ? ic("trophy") + (prev ? "¡Nuevo récord! Antes tenías " + prev + " puntos." : "¡Primer récord en este juego y zona!") : "Tu récord aquí: " + prev + " puntos. ¡A por él!";
     const tot = (store.get("gabi:totalStars") || 0) + S.stars; store.set("gabi:totalStars", tot);
   } else { const tot = (store.get("gabi:totalStars") || 0) + S.stars; store.set("gabi:totalStars", tot); $("#endRecord").textContent = "Partida de repaso: no cuenta para el récord."; }
+  logDay(x => { x.g++; x.s += S.stars; }); store.set("gabi:bestStreak", Math.max(store.get("gabi:bestStreak") || 0, S.best));
   // ¿Diploma? Toda la zona, sin repaso y todas a la primera
   $("#eStarsL").textContent = "puntos"; $("#eFirstL").textContent = "a la primera"; $("#eStreakL").textContent = "mejor racha";
   const perfect = !S.review && S.zone !== "hard" && S.total === S.pool.length && S.total > 0 && Object.keys(S.results).every(id => S.results[id] === 3);
@@ -989,6 +992,7 @@ function getDiplomas() { return store.get("gabi:diplomas") || []; }
 function addDiploma(d) {
   const list = getDiplomas().filter(x => !(x.zone === d.zone && x.mode === d.mode));
   list.push(d); store.set("gabi:diplomas", list);
+  logDay(x => x.d.push(d.zone));
 }
 function renderShelf() {
   const list = getDiplomas(), shelf = $("#shelf");
@@ -1086,7 +1090,7 @@ renderVoice();
 function showFact(id) {
   if (!DATO[id] || S.timed) return;
   const f = $("#fact"); f.hidden = false;
-  f.innerHTML = ic("bulb") + "<b>" + name(id) + ":</b> " + DATO[id];
+  f.innerHTML = BASKET[id] && Math.random() < .5 ? "<span class=\"bb\">🏀</span><b>" + name(id) + ":</b> " + BASKET[id] : ic("bulb") + "<b>" + name(id) + ":</b> " + DATO[id];
 }
 
 // ---------- Contrarreloj ----------
@@ -1113,6 +1117,7 @@ function finishTimed() {
   const n = S.found, k = "gabi:time:" + S.zone, prev = store.get(k) || 0, record = n > prev;
   if (record) store.set(k, n);
   store.set("gabi:totalStars", (store.get("gabi:totalStars") || 0) + n);
+  logDay(x => { x.g++; x.s += n; if (record) x.k = Math.max(x.k || 0, n); });
   $("#endDipBtn").hidden = true; $("#endDipMsg").hidden = true; $("#reviewWrap").hidden = true; $("#reviewBtn").hidden = true; $("#mapBtn").hidden = true; $("#endRecord").textContent = "";
   const big = n >= 15 ? 3 : n >= 8 ? 2 : 1;
   $("#bigstars").innerHTML = '<svg><use href="#star"/></svg>'.repeat(big);
@@ -1177,6 +1182,7 @@ $("#tabPrizes").onclick = () => setTab("prizes");
 function renderPrizes() {
   const tot = totalStars();
   if (typeof renderRank === "function") { renderRank(); renderTrips(); }
+  if (typeof renderCromos === "function") { renderCromos(); renderMedals(); renderDiary(); }
   $("#totalN").textContent = tot;
   $("#closetAdela").innerHTML = adelaSVG("happy");
   const box = $("#slots"); box.innerHTML = "";
@@ -1207,6 +1213,7 @@ function newUnlocks(from, to) {
   return out;
 }
 function announceUnlocks() {
+  setTimeout(checkMedals, 3600);
   const lvl = announceLevel();
   const tot = totalStars(), before = store.get("gabi:announced") || 0;
   const got = newUnlocks(before, tot);
@@ -1361,8 +1368,8 @@ tripCM.on("click", (e, f) => { Sound.tap(); openTrip(f.id); });
 $("#tripToggle").onclick = () => {
   const t = getTrips();
   if (t[tripId]) delete t[tripId];
-  else { t[tripId] = {}; Sound.ok(); say("¡Qué bien, " + KID + "! Has estado en " + name(tripId) + ". " + DATO[tripId], "ok", "jump"); }
-  setTrips(t); renderTrips(); openTrip(tripId);
+  else { t[tripId] = {}; logDay(x => x.t.push(tripId)); Sound.ok(); say("¡Qué bien, " + KID + "! Has estado en " + name(tripId) + ". " + DATO[tripId], "ok", "jump"); }
+  setTrips(t); renderTrips(); openTrip(tripId); checkMedals();
 };
 $("#tripClose").onclick = () => hideScreen($("#tripDlg"));
 
@@ -1418,6 +1425,7 @@ function finishDuel() {
   const win = g > r ? "gabi" : r > g ? "rival" : "tie";
   if (win === "gabi") d.g++; else if (win === "rival") d.r++; else d.t++;
   store.set("gabi:duel:" + S.rival, d);
+  logDay(x => { x.g++; x.s += S.stars; x.r.push([S.rival, win, g, r]); });
   store.set("gabi:totalStars", (store.get("gabi:totalStars") || 0) + S.stars);
   $("#endDipBtn").hidden = true; $("#endDipMsg").hidden = true; $("#reviewWrap").hidden = true; $("#reviewBtn").hidden = true; $("#mapBtn").hidden = true;
   $("#bigstars").innerHTML = win === "gabi" ? '<svg><use href="#star"/></svg>'.repeat(3) : "";
@@ -1433,6 +1441,174 @@ function finishDuel() {
   else if (win === "tie") { Sound.great(); confetti(100); say("¡Empate! ¡Qué igualado! 🤝", "ok", "jump"); }
   else { Sound.ok(); say("¡Gana " + R.name + "! Pero " + KID + " ha jugado genial. ¿Revancha? 💪", "", "jump"); }
   announceUnlocks();
+}
+
+// ---------- Baloncesto: datos para las provincias con historia de canasta ----------
+const BASKET = {
+  "01": "En Vitoria juega el Baskonia, uno de los grandes equipos de España. Su pabellón es el Buesa Arena.",
+  "03": "El Lucentum Alicante jugó muchos años en la Liga ACB, la liga más importante de España.",
+  "06": "De Villanueva de la Serena es José Manuel Calderón, que jugó muchos años en la NBA.",
+  "07": "De aquí son Rudy Fernández (Palma) y Sergio Llull (Mahón), dos leyendas de la selección española.",
+  "08": "Aquí nacieron Pau y Marc Gasol y aquí juegan el Barça y el Joventut de Badalona. En 1992, en sus Juegos Olímpicos, jugó el famoso Dream Team de la NBA.",
+  "09": "El San Pablo Burgos ganó dos veces seguidas la Basketball Champions League, una copa europea.",
+  "14": "De Córdoba es Felipe Reyes, que fue capitán del Real Madrid durante años.",
+  "15": "De A Coruña es Fernando Romay, uno de los jugadores más altos de la historia de España. En Santiago juega el Obradoiro.",
+  "17": "Marc Gasol fundó aquí su propio equipo: el Bàsquet Girona.",
+  "18": "En Granada juega el Covirán Granada, y allí se jugaron partidos del Mundial de baloncesto de 2014.",
+  "19": "De Azuqueca de Henares es Usman Garuba, que llegó a jugar en la NBA.",
+  "20": "De San Sebastián es Darío Brizuela, jugador de la selección española.",
+  "27": "En Lugo juega el Breogán, un equipo con muchísima afición. De la provincia es Fran Vázquez, que llegó a ser elegido para la NBA.",
+  "28": "Aquí juegan el Real Madrid, el equipo con más Euroligas de la historia, y el Estudiantes. De Madrid son Fernando Martín, el primer español en la NBA, y los hermanos Hernangómez.",
+  "29": "El Unicaja de Málaga ha ganado la Liga ACB, la Copa del Rey y la Basketball Champions League.",
+  "30": "El UCAM Murcia llegó a jugar la final de la Liga ACB en 2024.",
+  "35": "El Gran Canaria ganó la Eurocup en 2023. De Las Palmas es Santi Aldama, jugador de la NBA.",
+  "37": "El Perfumerías Avenida de Salamanca ganó la Euroliga femenina en 2011.",
+  "38": "El Tenerife ha ganado dos veces la Basketball Champions League. De aquí es Sergio «el Chacho» Rodríguez.",
+  "41": "En Sevilla juega el Betis de baloncesto, y allí se jugaron partidos del Mundial de 2014.",
+  "46": "El Valencia Basket ganó la Liga ACB en 2017 y varias Eurocups.",
+  "47": "En Valladolid jugó Arvydas Sabonis, uno de los mejores pívots de la historia del baloncesto.",
+  "48": "El Bilbao Basket ganó la FIBA Europe Cup en 2024. Bilbao fue sede del Mundial de 2014.",
+  "50": "De Zaragoza es Epi, uno de los jugadores más famosos de la historia de España. Allí juega el Casademont Zaragoza.",
+};
+
+// ---------- Ventanita de premio (cromo, medalla) que aparece y se va sola ----------
+const popQ = []; let popOn = false;
+function showPop(html, kind) {
+  popQ.push([html, kind]); if (!popOn) nextPop();
+}
+function nextPop() {
+  const it = popQ.shift(), el = $("#pop");
+  if (!it) { popOn = false; el.hidden = true; return; }
+  popOn = true; el.className = "pop " + (it[1] || ""); el.innerHTML = it[0]; el.hidden = false;
+  void el.offsetWidth; el.classList.add("in");
+  setTimeout(() => { el.classList.remove("in"); setTimeout(nextPop, 350); }, 2300);
+}
+
+// ---------- Diario del explorador ----------
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+function logDay(fn) {
+  const all = store.get("gabi:diary") || {}, k = today();
+  const d = Object.assign({ g: 0, s: 0, c: [], b: [], m: [], d: [], r: [], t: [] }, all[k]);
+  fn(d); all[k] = d;
+  // Solo se guardan los últimos 120 días con actividad
+  const keys = Object.keys(all).sort(); while (keys.length > 120) delete all[keys.shift()];
+  store.set("gabi:diary", all);
+}
+const listNames = ids => { const n = ids.map(name); return n.length < 2 ? n.join("") : n.slice(0, -1).join(", ") + " y " + n[n.length - 1]; };
+const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+function dayTitle(k) {
+  const [y, m, d] = k.split("-").map(Number), dt = new Date(y, m - 1, d);
+  const diff = Math.round((new Date(today().replace(/-/g, "/")) - dt) / 864e5);
+  const base = DIAS[dt.getDay()] + " " + d + " de " + MESES[m - 1];
+  return (diff === 0 ? "Hoy, " : diff === 1 ? "Ayer, " : "") + base;
+}
+function dayLines(d) {
+  const L = [];
+  if (d.g) L.push(["play", "Has jugado " + d.g + (d.g === 1 ? " partida" : " partidas") + " y has ganado " + d.s + (d.s === 1 ? " estrella." : " estrellas.")]);
+  if (d.c.length) L.push(["cromo", (d.c.length === 1 ? "Cromo nuevo: " : d.c.length + " cromos nuevos: ") + listNames(d.c) + "."]);
+  if (d.b.length) L.push(["brillo", "¡Cromo brillante de " + listNames(d.b) + "!"]);
+  d.m.forEach(id => { const m = MEDALS.find(x => x[0] === id); if (m) L.push(["medal", "Medalla ganada: «" + m[2] + "» " + m[1]]); });
+  d.d.forEach(z => L.push(["dip", "¡Diploma de " + zoneTag(z) + " sin ni un fallo!"]));
+  if (d.k) L.push(["time", "Récord en contrarreloj: " + d.k + " provincias en un minuto."]);
+  d.r.forEach(([rv, w, g, r]) => { const R = (RIVALS[rv] || RIVALS.papa).name.toLowerCase(); L.push(["duel", w === "gabi" ? "¡Le ganaste a " + R + " " + g + " a " + r + "!" : w === "rival" ? "Reto contra " + R + ": ganó " + R + " " + r + " a " + g + ". ¡Revancha pendiente!" : "Empate con " + R + " a " + g + "."]); });
+  if (d.t.length) L.push(["trip", "Marcaste tus viajes a " + listNames(d.t) + "."]);
+  return L;
+}
+const DIARY_IC = { play: "🎮", cromo: "🃏", brillo: "✨", medal: "🏅", dip: "🎓", time: "⏱️", duel: "🏀", trip: "📍" };
+function renderDiary() {
+  const all = store.get("gabi:diary") || {}, keys = Object.keys(all).sort().reverse();
+  // Estrellas por semana (últimas 8 semanas)
+  const now = new Date(today().replace(/-/g, "/")), wk = [];
+  for (let i = 7; i >= 0; i--) wk.push(0);
+  keys.forEach(k => { const dd = Math.floor((now - new Date(k.replace(/-/g, "/"))) / 864e5); const w = Math.floor(dd / 7); if (dd >= 0 && w < 8) wk[7 - w] += all[k].s || 0; });
+  const max = Math.max(10, ...wk);
+  $("#diaryWeeks").innerHTML = wk.map((v, i) => '<div class="wk' + (i === 7 ? " now" : "") + '"><i style="height:' + Math.round(v / max * 100) + '%"></i><b>' + v + "</b><span>" + (i === 7 ? "esta" : i === 6 ? "pasada" : "") + "</span></div>").join("");
+  const days = keys.filter(k => dayLines(all[k]).length).slice(0, 10);
+  $("#diaryDays").innerHTML = days.length ? days.map(k => '<div class="dday"><h4>' + dayTitle(k) + "</h4>" + dayLines(all[k]).map(([t, x]) => "<p>" + DIARY_IC[t] + " " + x + "</p>").join("") + "</div>").join("")
+    : '<p class="record">Tu diario está vacío. ¡Juega una partida y empezará a llenarse solo!</p>';
+}
+
+// ---------- Álbum de cromos ----------
+const getCromos = () => store.get("gabi:cromos") || {};
+const CROMO_ORDER = ALL.slice().sort((a, b) => P[a][3].localeCompare(P[b][3], "es") || name(a).localeCompare(name(b), "es"));
+function gainCromo(id) {
+  if (!P[id]) return;
+  const c = getCromos();
+  if (!c[id]) {
+    c[id] = { d: today(), s: 0 }; store.set("gabi:cromos", c);
+    logDay(x => x.c.push(id));
+    showPop(cromoMini(id, c[id]) + "<div><b>¡Cromo nuevo!</b><span>" + name(id) + " · " + Object.keys(c).length + " de 52</span></div>", "k-cromo");
+  } else if (!c[id].s && Math.random() < .12) {
+    c[id].s = 1; store.set("gabi:cromos", c);
+    logDay(x => x.b.push(id));
+    showPop(cromoMini(id, c[id]) + "<div><b>¡CROMO BRILLANTE! ✨</b><span>" + name(id) + " ahora brilla en tu álbum</span></div>", "k-cromo k-shiny");
+    Sound.great();
+  }
+}
+const cromoMini = (id, c) => '<span class="cromo mini' + (c && c.s ? " shiny" : "") + '"><svg aria-hidden="true"><use href="#e-' + (EMBLEM[P[id][3]] || "base") + '"/></svg><b>' + name(id) + "</b></span>";
+function renderCromos() {
+  const c = getCromos(), n = Object.keys(c).filter(id => P[id]).length, sh = Object.values(c).filter(x => x.s).length;
+  $("#cromoCount").textContent = n + " de 52" + (sh ? " · " + sh + " ✨" : "");
+  $("#cromoBar").style.width = (n / 52 * 100) + "%";
+  $("#cromos").innerHTML = CROMO_ORDER.map(id => c[id]
+    ? '<button class="cromo' + (c[id].s ? " shiny" : "") + '" data-id="' + id + '"><svg aria-hidden="true"><use href="#e-' + (EMBLEM[P[id][3]] || "base") + '"/></svg><b>' + name(id) + "</b>" + (BASKET[id] ? '<i class="bbm">🏀</i>' : "") + "</button>"
+    : '<button class="cromo locked" data-id="' + id + '" aria-label="Cromo sin conseguir"><span>?</span></button>').join("");
+  $$("#cromos .cromo").forEach(b => b.onclick = () => openCromo(b.dataset.id));
+}
+function openCromo(id) {
+  const c = getCromos()[id];
+  if (!c) { Sound.bad(); say("Este cromo es de " + P[id][3] + ". ¡Acierta sus provincias a la primera para conseguirlo, " + KID + "!", "", "jump"); return; }
+  Sound.tap();
+  const [y, m, d] = c.d.split("-");
+  $("#cromoBig").className = "cromobig" + (c.s ? " shiny" : "");
+  $("#cromoBig").innerHTML = '<svg class="em" aria-hidden="true"><use href="#e-' + (EMBLEM[P[id][3]] || "base") + '"/></svg>' +
+    "<h3>" + name(id) + "</h3><p class=\"cc\">" + P[id][3] + "</p><p><b>Capital:</b> " + cap(id) + "</p><p>" + ic("bulb") + DATO[id] + "</p>" +
+    (BASKET[id] ? '<p><span class="bb">🏀</span>' + BASKET[id] + "</p>" : "") +
+    '<p class="when">' + (c.s ? "✨ Cromo brillante · " : "") + "Conseguido el " + Number(d) + " de " + MESES[m - 1] + " de " + y + "</p>";
+  showScreen($("#cromoDlg"));
+  Voice.say(name(id) + ". " + DATO[id]);
+}
+$("#cromoClose").onclick = () => hideScreen($("#cromoDlg"));
+
+// ---------- Medallas ----------
+const ccaaIds = z => ALL.filter(id => P[id][3] === z);
+const hasAll = ids => { const c = getCromos(); return ids.every(id => c[id]); };
+const cromoN = () => Object.keys(getCromos()).filter(id => P[id]).length;
+const MEDALS = [
+  ["quinteto", "🏀", "Quinteto inicial", "Consigue 5 cromos", () => cromoN() >= 5],
+  ["norte", "⛰️", "Rey del norte", "Todos los cromos de Galicia, Asturias y Cantabria", () => hasAll([...ccaaIds("Galicia"), "33", "39"])],
+  ["sur", "☀️", "Señor de Andalucía", "Los 8 cromos de Andalucía", () => hasAll(ccaaIds("Andalucía"))],
+  ["castilla", "🏰", "Rey de Castilla", "Los 9 cromos de Castilla y León", () => hasAll(ccaaIds("Castilla y León"))],
+  ["isleno", "🏝️", "Isleño", "Los cromos de Baleares y Canarias", () => hasAll(["07", "35", "38"])],
+  ["mitad", "📒", "Coleccionista", "Consigue 26 cromos (medio álbum)", () => cromoN() >= 26],
+  ["album", "👑", "Álbum completo", "¡Los 52 cromos!", () => cromoN() >= 52],
+  ["brillo", "✨", "Brillante", "Consigue tu primer cromo brillante", () => Object.values(getCromos()).some(x => x.s)],
+  ["racha", "🔥", "MVP", "10 seguidas a la primera en una partida", () => (store.get("gabi:bestStreak") || 0) >= 10],
+  ["velocista", "⚡", "Contraataque", "20 provincias en una contrarreloj", () => Object.keys(localStorage).some(k => k.startsWith("gabi:time:") && (store.get(k) || 0) >= 20)],
+  ["tripledoble", "🎓", "Triple-doble", "Gana 3 diplomas", () => getDiplomas().length >= 3],
+  ["familia", "🏆", "Campeón de la familia", "Gana 3 retos a papá o mamá", () => duelRec("papa").g + duelRec("mama").g >= 3],
+  ["viajero", "🧳", "Viajero", "Marca 5 provincias en Mis viajes", () => Object.keys(getTrips()).length >= 5],
+  ["anillo", "💍", "Anillo de campeón", "Llega al nivel Gran Explorador de España", () => levelOf(totalStars()) >= 4],
+];
+const getMedals = () => store.get("gabi:medals") || {};
+function checkMedals(silent) {
+  const got = getMedals(), fresh = [];
+  MEDALS.forEach(([id, , , , test]) => { let ok = false; try { ok = test(); } catch (e) {} if (ok && !got[id]) { got[id] = today(); fresh.push(id); } });
+  if (!fresh.length) return;
+  store.set("gabi:medals", got);
+  if (silent) return;
+  logDay(x => fresh.forEach(id => x.m.push(id)));
+  fresh.forEach(id => { const m = MEDALS.find(x => x[0] === id); showPop('<span class="medal big">' + m[1] + "</span><div><b>¡Medalla: " + m[2] + "!</b><span>" + m[3] + "</span></div>", "k-medal"); });
+  const m = MEDALS.find(x => x[0] === fresh[0]);
+  say("¡Has ganado la medalla «" + m[2] + "», " + KID + "! 🏅 Mírala en «Mis premios»", "cheer", "jump");
+  Sound.win(); confetti(160);
+  $("#newBadge").hidden = false;
+  renderMedals();
+}
+function renderMedals() {
+  const got = getMedals(), n = MEDALS.filter(m => got[m[0]]).length;
+  $("#medalCount").textContent = n + " de " + MEDALS.length;
+  $("#medals").innerHTML = MEDALS.map(([id, e, t, d]) => '<div class="medalc' + (got[id] ? "" : " locked") + '"><span class="medal">' + (got[id] ? e : "🔒") + "</span><b>" + t + "</b><small>" + d + "</small></div>").join("");
 }
 
 // ---------- Aviso de versión nueva (solo publicada en una web, p. ej. Netlify) ----------

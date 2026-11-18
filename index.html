@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="app-version" content="1.9">
+<meta name="app-version" content="2.0">
 <meta name="app-date" content="18/11/2026">
 <title>La aventura de Gabi por España</title>
 <meta name="description" content="Juego para aprender las provincias de España con Adela.">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=1.9">
+<link rel="stylesheet" href="css/style.css?v=2.0">
 </head>
 <body>
 
@@ -190,6 +190,16 @@
     <div class="tabpanel" id="panelPrizes" hidden>
       <div class="totalstars"><svg aria-hidden="true"><use href="#star"/></svg><b id="totalN">0</b><span>estrellas en total</span></div>
       <div class="levels" id="levels"></div>
+      <div class="cromobox">
+        <div class="albumhead"><b>🃏 Álbum de cromos</b><span id="cromoCount"></span></div>
+        <div class="cbar"><i id="cromoBar"></i></div>
+        <p class="record">Acierta una provincia <b>a la primera</b> y su cromo es tuyo. Si vuelves a acertarla, ¡a veces sale brillante! ✨</p>
+        <div class="cromos" id="cromos"></div>
+      </div>
+      <div class="medalbox">
+        <div class="albumhead"><b>🏅 Mis medallas</b><span id="medalCount"></span></div>
+        <div class="medals" id="medals"></div>
+      </div>
       <div class="closet">
         <div class="albumhead"><b><svg class="ic" aria-hidden="true"><use href="#i-hanger"/></svg>El armario de Adela</b><span>Gana estrellas y desbloquea ropa</span></div>
         <div class="closetbody">
@@ -204,6 +214,12 @@
     </div>
     <p class="record" id="shelfTitle" hidden>Tus diplomas (tócalos para verlos):</p>
     <div class="shelf" id="shelf"></div>
+      <div class="diary">
+        <div class="albumhead"><b>📔 Diario del explorador</b><span>Lo que has conseguido cada día</span></div>
+        <p class="record">Estrellas ganadas cada semana:</p>
+        <div class="weeks" id="diaryWeeks"></div>
+        <div id="diaryDays"></div>
+      </div>
       <div class="trips">
         <div class="albumhead"><b><svg class="ic" aria-hidden="true"><use href="#i-suitcase"/></svg>Mis viajes</b><span id="tripCount"></span></div>
         <p class="record">Toca las provincias en las que has estado de verdad.</p>
@@ -275,6 +291,15 @@
   </div>
 </div>
 
+<!-- Ficha de un cromo -->
+<div class="screen" id="cromoDlg" hidden role="dialog" aria-label="Cromo">
+  <div class="sbox cromodlg">
+    <div class="cromobig" id="cromoBig"></div>
+    <div class="row"><button class="btn primary" id="cromoClose">¡Guay!</button></div>
+  </div>
+</div>
+<div class="pop" id="pop" hidden aria-live="polite"></div>
+
 <!-- Diploma -->
 <div class="screen" id="dip" hidden role="dialog" aria-labelledby="dipTitle">
   <div class="sbox dipbox">
@@ -299,7 +324,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-composite-projections@1.4.0/d3-composite-projections.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<script src="js/data.js?v=1.9"></script>
-<script src="js/app.js?v=1.9"></script>
+<script src="js/data.js?v=2.0"></script>
+<script src="js/app.js?v=2.0"></script>
 </body>
 </html>

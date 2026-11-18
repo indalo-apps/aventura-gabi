@@ -322,3 +322,32 @@ body[data-mode="explore"] .explore-layer { display: inline; }
   .closetAdela { width: 140px; height: 140px; }
   .tab { font-size: 1rem; padding: 10px 6px; }
 }
+
+/* ===== v1.6: niveles y mis viajes ===== */
+.rank { display: flex; align-items: center; gap: 10px; margin-top: 10px; border: 0; background: #fff; border-radius: 18px; padding: 8px 14px 8px 10px; box-shadow: 0 4px 0 #d8d2ff; font-family: var(--f); text-align: left; max-width: 420px; }
+.rank .shield { width: 44px; height: 52px; flex: none; }
+.rank span { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.rank small { color: var(--muted); font-size: .8rem; font-weight: 600; }
+.rank b { font-size: 1.15rem; color: var(--ink); line-height: 1.1; }
+.rankbar { display: block; height: 8px; background: #efeaff; border-radius: 99px; overflow: hidden; margin: 2px 0; }
+.rankbar i { display: block; height: 100%; border-radius: 99px; }
+.levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.lvl { background: #fff; border-radius: 18px; padding: 10px 6px; text-align: center; box-shadow: 0 4px 0 #e2dbff; display: flex; flex-direction: column; align-items: center; gap: 2px; opacity: .55; }
+.lvl.got { opacity: 1; } .lvl.now { box-shadow: 0 0 0 3px var(--accent), 0 4px 0 #d8d2ff; }
+.lvl .shield { width: 38px; height: 44px; }
+.lvl b { font-size: .85rem; line-height: 1.1; } .lvl small { color: var(--muted); font-size: .75rem; }
+.trips { background: #fff; border-radius: 24px; padding: 14px 16px; box-shadow: 0 6px 0 #d8d2ff; display: flex; flex-direction: column; gap: 8px; }
+#tripMap { width: 100%; height: 320px; display: block; }
+#tripMap .tp { fill: #e8ecf4; stroke: #fff; stroke-width: .8; vector-effect: non-scaling-stroke; cursor: pointer; }
+#tripMap .tp:hover { fill: #d6cfff; }
+#tripMap .tp.been { fill: #7fd6a8; }
+#tripMap .tcm { fill: #e8ecf4; stroke: #2b2d5c; stroke-width: 1; vector-effect: non-scaling-stroke; cursor: pointer; } #tripMap .tcm.been { fill: #7fd6a8; }
+#tripMap use, .trip-layer use { pointer-events: none; }
+.tripbox { width: min(520px, 100%); }
+.tripbox input { width: 100%; font: 600 1.1rem var(--f); padding: 10px 12px; border-radius: 14px; border: 3px solid #e2dbff; -webkit-user-select: text; user-select: text; }
+#tripPhoto, .tripthumb { width: 100%; max-height: 320px; object-fit: cover; border-radius: 16px; box-shadow: 0 6px 18px rgba(43, 45, 92, .2); }
+.tripthumb { max-height: 150px; margin: 6px 0; display: block; }
+#tripMore { display: flex; flex-direction: column; gap: 12px; }
+#tripMore[hidden] { display: none; }
+.fact .been { display: block; color: #10804f; margin-bottom: 4px; }
+@media (max-width: 880px) { .levels { grid-template-columns: repeat(2, 1fr); } #tripMap { height: 240px; } .rank { max-width: none; } .tripthumb { max-height: 80px; } }

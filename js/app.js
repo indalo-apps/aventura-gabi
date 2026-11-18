@@ -338,7 +338,7 @@ function sizeText(box) {
   gDone.selectAll("text").each(function () { this.style.fontSize = fs(+this.getAttribute("data-r") || 14, box) + "px"; });
   const r = fs(1, box);
   cmDots.attr("r", 6 * r); cmHit.attr("r", 20 * r);
-  if (typeof placeExplore === "function" && document.body.dataset.mode === "explore") placeExplore();
+  if (typeof placeExplore === "function" && document.body.dataset.mode === "explore") { placeExplore(); renderTripPinsOnMap(); }
 }
 function label(id, text, kind, ms) {
   const c = centroidOf(id);
@@ -469,7 +469,7 @@ function setupMap() {
 function startGame(only) {
   clearInterval(S.timer); S.timer = null;
   hideScreen($("#home")); hideScreen($("#end")); $("#legend").hidden = true;
-  setCanaryLayout(); gameIn();
+  setCanaryLayout(); gameIn(); gTrips.selectAll("*").remove();
   setupMap();
   document.body.dataset.mode = S.mode;
   const explore = S.mode === "explore", timed = S.mode === "time";
@@ -479,7 +479,7 @@ function startGame(only) {
   $("#timer").hidden = !timed; $("#tries").hidden = timed;
   $("#helpBtn").innerHTML = timed ? ic("skip") + "<span>Pasar</span>" : ic("bulb") + "<span>Pista</span>";
   if (explore) {
-    $("#opts").hidden = true; setTimeout(placeExplore, 50);
+    $("#opts").hidden = true; setTimeout(() => { placeExplore(); renderTripPinsOnMap(); }, 50);
     say("¡Toca cualquier provincia, " + KID + ", y te cuento cómo se llama!");
     $("#iname").textContent = "—"; $("#icap").textContent = "—"; $("#iccaa").textContent = "—";
     return;
@@ -607,7 +607,8 @@ function answer(id, btn) {
     S.score += pts;
     S.done++; updateProg();
     ripple(target);
-    toast(target, "✓ " + name(target) + (S.mode === "cap" ? " — " + cap(target) : "") + (pts ? " <small>+" + pts + "</small>" : ""), "ok", 1300);
+    const been = visited(target);
+    toast(target, (been ? "📍 " : "✓ ") + name(target) + (S.mode === "cap" ? " — " + cap(target) : "") + (pts ? " <small>+" + pts + "</small>" : ""), "ok", 1300);
     cls(target, "target", false); cls(target, "reveal", false);
     cls(target, "flash-ok");
     setTimeout(() => { cls(target, "flash-ok", false); cls(target, earned >= 3 ? "done" : "done2"); }, 700);
@@ -629,6 +630,7 @@ function answer(id, btn) {
     } else {
       msg = S.miss === 1 ? rnd(MSG.ok2) : rnd(MSG.ok3); Sound.ok(); if (S.miss === 1) { const [x, y] = screenPt(target); confetti(30, x, y); }
     }
+    if (been && S.miss === 0) msg = rnd(["¡Muy bien! ¡Y tú has estado en " + name(target) + "!", "¡Eso es! " + name(target) + "… ¡ahí estuviste tú!", "¡Claro, si has estado allí!"]);
     say(msg, "ok", "jump");
     if (S.mode === "cap") $("#qsub").textContent = "La capital de " + name(target) + " es " + cap(target) + " ✨";
     else if (S.mode === "ccaa") $("#qsub").textContent = name(target) + " está en " + P[target][3] + " ✨";
@@ -709,7 +711,10 @@ function onMapClick(id) {
     $("#iname").textContent = name(id); $("#icap").textContent = cap(id); $("#iccaa").textContent = P[id][3];
     const alt = P[id][1] ? " (o " + P[id][1] + ")" : "";
     say(name(id) + alt + ". Su capital es " + cap(id) + (cap(id) === name(id) ? ", ¡igual que la provincia!" : "."), "", "jump");
-    $("#ifact").hidden = false; $("#ifact").innerHTML = ic("bulb") + "<b>¿Sabías que…?</b> " + DATO[id];
+    const trip = getTrips()[id];
+    $("#ifact").hidden = false; $("#ifact").innerHTML = (trip ? '<span class="been">' + ic("pin") + "<b>¡Aquí estuviste" + (trip.note ? " (" + trip.note.replace(/[<>&]/g, "") + ")" : "") + "!</b></span>" + (trip.photo ? '<img class="tripthumb" src="' + trip.photo + '" alt="Foto del viaje">' : "") : "") +
+      ic("bulb") + "<b>¿Sabías que…?</b> " + DATO[id];
+    if (trip) say("¡En " + name(id) + " estuviste tú, " + KID + "! Su capital es " + cap(id) + ".", "ok", "jump");
     Voice.say(name(id) + ". Su capital es " + cap(id) + ". " + DATO[id]);
     return;
   }
@@ -1140,6 +1145,7 @@ $("#tabPrizes").onclick = () => setTab("prizes");
 // ---------- El armario de Adela ----------
 function renderPrizes() {
   const tot = totalStars();
+  if (typeof renderRank === "function") { renderRank(); renderTrips(); }
   $("#totalN").textContent = tot;
   $("#closetAdela").innerHTML = adelaSVG("happy");
   const box = $("#slots"); box.innerHTML = "";
@@ -1170,6 +1176,7 @@ function newUnlocks(from, to) {
   return out;
 }
 function announceUnlocks() {
+  const lvl = announceLevel();
   const tot = totalStars(), before = store.get("gabi:announced") || 0;
   const got = newUnlocks(before, tot);
   store.set("gabi:announced", tot);
@@ -1177,7 +1184,7 @@ function announceUnlocks() {
   setTimeout(() => {
     say("¡Has desbloqueado " + got.join(", ").toLowerCase() + " para mi armario! Míralo en «Mis premios» 🎁", "cheer", "jump");
     Sound.great(); confetti(90);
-  }, 2600);
+  }, lvl ? 6500 : 2600);
 }
 
 // ---------- Copia de seguridad del progreso ----------
@@ -1261,6 +1268,116 @@ function placeExplore() {
   });
 }
 
+
+// ---------- Niveles: el título de Gabi sube con las estrellas ----------
+const LEVELS = [
+  [0, "Explorador novato", "#9fd3ff"], [40, "Aventurero", "#22b573"], [100, "Viajero", "#ff8a3d"],
+  [200, "Capitán", "#7b5cff"], [350, "Gran Explorador de España", "#ffc93c"], [600, "Leyenda de los mapas", "#ff5d9e"]];
+const levelOf = n => { let i = 0; LEVELS.forEach((l, k) => { if (n >= l[0]) i = k; }); return i; };
+function renderRank() {
+  const tot = totalStars(), i = levelOf(tot), [, title, col] = LEVELS[i], next = LEVELS[i + 1];
+  const pct = next ? Math.round((tot - LEVELS[i][0]) / (next[0] - LEVELS[i][0]) * 100) : 100;
+  $("#rank").innerHTML = '<svg class="shield" style="color:' + col + '"><use href="#i-shield"/></svg><span><small>Nivel ' + (i + 1) + '</small><b>' + title + '</b>' +
+    '<i class="rankbar"><i style="width:' + pct + '%;background:' + col + '"></i></i>' +
+    '<small>' + (next ? "Te faltan " + (next[0] - tot) + " estrellas para " + next[1] : "¡Has llegado a lo más alto!") + '</small></span>';
+  $("#levels").innerHTML = LEVELS.map((l, k) => '<div class="lvl' + (k <= i ? " got" : "") + (k === i ? " now" : "") + '"><svg class="shield" style="color:' + (k <= i ? l[2] : "#dfe3ee") + '"><use href="#i-shield"/></svg><b>' + l[1] + '</b><small>' +
+    (k <= i ? (k === i ? "Tu nivel" : "Conseguido") : l[0] + " estrellas") + '</small></div>').join("");
+}
+$("#rank").onclick = () => setTab("prizes");
+function announceLevel() {
+  const tot = totalStars(), seen = store.get("gabi:rankSeen") ?? levelOf(tot), now = levelOf(tot);
+  store.set("gabi:rankSeen", now);
+  if (now <= seen) return false;
+  setTimeout(() => {
+    say("¡HAS SUBIDO DE NIVEL! Ahora eres " + LEVELS[now][1] + ", " + KID + " 🎉", "cheer", "jump");
+    Sound.win(); confetti(200); setTimeout(() => confetti(150, innerWidth * .25, innerHeight * .4), 400); setTimeout(() => confetti(150, innerWidth * .75, innerHeight * .4), 800);
+  }, 2400);
+  return true;
+}
+
+// ---------- Mis viajes: las provincias donde Gabi ha estado de verdad ----------
+// Las fotos se quedan solo en este aparato (no se suben a ningún sitio); entran en la copia de seguridad
+const getTrips = () => store.get("gabi:trips") || {};
+const setTrips = t => { try { localStorage.setItem("gabi:trips", JSON.stringify(t)); return true; } catch (e) { return false; } };
+const visited = id => !!getTrips()[id];
+const tripSvg = d3.select("#tripMap").attr("viewBox", HOME_SIDE.join(" "));
+const tripPaths = tripSvg.selectAll("path.tp").data(features.filter(f => P[f.id])).join("path").attr("class", "tp").attr("d", path);
+tripSvg.append("path").attr("class", "ab").attr("d", path(topojson.mesh(TOPO, TOPO.objects.provinces, (a, b) => a === b || (P[a.id] && P[b.id] && P[a.id][3] !== P[b.id][3]))));
+const tripCM = tripSvg.selectAll("circle.tcm").data(CM).join("circle").attr("class", "tcm").attr("cx", f => path.centroid(f)[0]).attr("cy", f => path.centroid(f)[1]).attr("r", HOME_SIDE[2] * .012);
+const tripPins = tripSvg.append("g");
+function renderTrips() {
+  const t = getTrips(), n = Object.keys(t).length;
+  tripPaths.attr("class", f => "tp" + (t[f.id] ? " been" : ""));
+  tripCM.attr("class", f => "tcm" + (t[f.id] ? " been" : ""));
+  tripPins.selectAll("*").remove();
+  Object.keys(t).forEach(id => {
+    if (!featById[id]) return;
+    const c = path.centroid(mainGeom(id)), s = HOME_SIDE[2] * .045;
+    tripPins.append("use").attr("href", "#i-pin").attr("x", c[0] - s / 2).attr("y", c[1] - s).attr("width", s).attr("height", s);
+  });
+  $("#tripCount").textContent = n ? "Has estado en " + n + " de 52" : "Aún no has marcado ninguna";
+  renderTripPinsOnMap();
+}
+let tripId = null;
+function openTrip(id) {
+  tripId = id; const t = getTrips()[id];
+  $("#tripTitle").textContent = name(id);
+  $("#tripToggle").innerHTML = t ? '<svg class="ic"><use href="#i-pin"/></svg>He estado aquí ✓ (toca para quitar)' : '<svg class="ic"><use href="#i-pin"/></svg>Sí, he estado aquí';
+  $("#tripToggle").className = "btn " + (t ? "primary" : "sun");
+  $("#tripMore").hidden = !t;
+  $("#tripNote").value = (t && t.note) || "";
+  const ph = t && t.photo; $("#tripPhoto").hidden = !ph; if (ph) $("#tripPhoto").src = ph;
+  $("#tripPhotoDel").hidden = !ph; $("#tripFileLbl").textContent = ph ? "Cambiar foto" : "Añadir foto";
+  showScreen($("#tripDlg"));
+}
+tripPaths.on("click", (e, f) => { Sound.tap(); openTrip(f.id); });
+tripCM.on("click", (e, f) => { Sound.tap(); openTrip(f.id); });
+$("#tripToggle").onclick = () => {
+  const t = getTrips();
+  if (t[tripId]) delete t[tripId];
+  else { t[tripId] = { note: "" }; Sound.ok(); say("¡Qué bien, " + KID + "! Has estado en " + name(tripId) + ". " + DATO[tripId], "ok", "jump"); }
+  setTrips(t); renderTrips(); openTrip(tripId);
+};
+$("#tripNote").oninput = () => { const t = getTrips(); if (t[tripId]) { t[tripId].note = $("#tripNote").value; setTrips(t); } };
+$("#tripPhotoDel").onclick = () => { const t = getTrips(); if (t[tripId]) { delete t[tripId].photo; setTrips(t); openTrip(tripId); } };
+$("#tripFile").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const url = await shrinkPhoto(f, 640, .72);
+    const t = getTrips(); if (!t[tripId]) return;
+    t[tripId].photo = url;
+    if (!setTrips(t)) { alertTrip("No cabe más fotos en este aparato. Quita alguna antigua."); return; }
+    openTrip(tripId); renderTrips(); Sound.ok();
+  } catch (er) { alertTrip("No he podido abrir esa foto."); }
+};
+function alertTrip(t) { say(t, "bad", "sad"); }
+function shrinkPhoto(file, max, q) {
+  return new Promise((res, rej) => {
+    const im = new Image(), u = URL.createObjectURL(file);
+    im.onload = () => {
+      const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement("canvas");
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+      res(c.toDataURL("image/jpeg", q));
+    };
+    im.onerror = rej; im.src = u;
+  });
+}
+$("#tripClose").onclick = () => hideScreen($("#tripDlg"));
+
+// En el mapa del juego: chinchetas en Explorar
+const gTrips = gZoom.append("g").attr("class", "trip-layer");
+function renderTripPinsOnMap() {
+  gTrips.selectAll("*").remove();
+  if (document.body.dataset.mode !== "explore") return;
+  const k = fs(1);
+  Object.keys(getTrips()).forEach(id => {
+    if (!featById[id]) return;
+    const c = centroidOf(id), s = 22 * k;
+    gTrips.append("use").attr("href", "#i-pin").attr("x", c[0] + 4 * k).attr("y", c[1] - s - 2 * k).attr("width", s).attr("height", s);
+  });
+}
+
 // ---------- Aviso de versión nueva (solo publicada en una web, p. ej. Netlify) ----------
 async function checkUpdate() {
   if (IN_CLAUDE || !/^https?:/.test(location.protocol)) return;
@@ -1280,5 +1397,8 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 setInterval(checkUpdate, 10 * 60 * 1000);
 setTimeout(checkUpdate, 3000);
 if (!ZONES.some(z => z[0] === S.zone)) S.zone = "all";
+// Primera vez con niveles/armario: se parte del total actual para no anunciar como «nuevo» lo que ya tenía
+if (store.get("gabi:rankSeen") == null) store.set("gabi:rankSeen", levelOf(totalStars()));
+if (store.get("gabi:announced") == null) store.set("gabi:announced", totalStars());
 renderPrizes();
 showHome();

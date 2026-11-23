@@ -1640,6 +1640,7 @@ function renderMedals() {
 // ---------- Actualización automática y novedades ----------
 // Lo que trae cada versión, contado para Gabi (lo más nuevo, arriba)
 const NEWS = [
+  ["2.4.1",["📲 Ayuda para instalar al día con iOS 27: el botón de tres rayas dentro de la barra de la dirección"]],
   ["2.4", ["⚙️ Nuevos Ajustes, abajo del todo: instalar el juego, buscar actualizaciones y ver novedades",
            "📲 Ayuda para ponerlo en la pantalla de inicio con los pasos de tu iPad"]],
   ["2.3", ["🛂 Nuevo icono: ¡un sello de pasaporte con tu nombre! (Para verlo, quita el icono de la pantalla de inicio y vuelve a añadirlo)"]],

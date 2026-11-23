@@ -457,3 +457,15 @@ body { height: 100vh; height: 100dvh; }
 .newslist li { background: #f6f3ff; border-radius: 14px; padding: 8px 12px; font-size: 1.05rem; line-height: 1.3; }
 #version { cursor: pointer; } #version u { color: var(--accent-dark); text-underline-offset: 3px; }
 button.version { border: 0; background: none; width: 100%; padding: 8px; min-height: 44px; font-family: var(--f); }
+
+/* ---------- Ajustes ---------- */
+:root { --ik-accent: #6d4cf5; }
+.ajcard { text-align: left; align-items: stretch; }
+.ajcard h2 { text-align: center; }
+.ajg { width: 100%; border-top: 2px solid #efeaff; padding-top: 10px; margin-top: 10px; }
+.ajg h3 { margin: 0 0 6px; font-size: 1.05rem; color: var(--accent-dark); }
+.ajg p { margin: 6px 0 0; }
+.ajmut { color: var(--muted); font-size: .95rem; }
+.ajabout { display: flex; gap: 12px; align-items: center; }
+.ajabout img { border-radius: 12px; flex: none; }
+.ajrow { display: flex; flex-wrap: wrap; gap: 8px; }

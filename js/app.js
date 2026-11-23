@@ -1640,6 +1640,8 @@ function renderMedals() {
 // ---------- Actualización automática y novedades ----------
 // Lo que trae cada versión, contado para Gabi (lo más nuevo, arriba)
 const NEWS = [
+  ["2.4", ["⚙️ Nuevos Ajustes, abajo del todo: instalar el juego, buscar actualizaciones y ver novedades",
+           "📲 Ayuda para ponerlo en la pantalla de inicio con los pasos de tu iPad"]],
   ["2.3", ["🛂 Nuevo icono: ¡un sello de pasaporte con tu nombre! (Para verlo, quita el icono de la pantalla de inicio y vuelve a añadirlo)"]],
   ["2.2", ["🔄 El juego se actualiza solo y te cuenta las novedades, ¡como ahora!"]],
   ["2.1", ["🗂️ «Mis premios» ahora tiene pestañas: Cromos, Medallas, Adela, Diplomas, Diario…",
@@ -1663,7 +1665,17 @@ function showNews(since) {
   return true;
 }
 $("#newsClose").onclick = () => { Sound.tap(); hideScreen($("#newsDlg")); };
-$("#version").onclick = () => showNews(null);
+// Ajustes: instalar, acerca de y versión
+function showAjustes() {
+  $("#ajVer").textContent = APP_VERSION;
+  $("#ajInstOk").hidden = !IK.instalada(); $("#ajInst").hidden = IK.instalada();
+  showScreen($("#ajDlg"));
+}
+$("#version").onclick = () => { Sound.tap(); showAjustes(); };
+$("#ajClose").onclick = () => { Sound.tap(); hideScreen($("#ajDlg")); };
+$("#ajInst").onclick = () => { Sound.tap(); IK.abrirInstalar(); };
+$("#ajNov").onclick = () => { Sound.tap(); hideScreen($("#ajDlg")); showNews(null); };
+$("#ajBuscar").onclick = () => { Sound.tap(); IK.buscar($("#ajBuscar"), $("#ajMsg")); };
 // Al abrir una versión nueva por primera vez, se enseñan sus novedades (una sola vez)
 function newsOnStart() {
   let seen = store.get("gabi:seenVersion");
@@ -1695,7 +1707,8 @@ new MutationObserver(() => { if (pendingUpdate && safeToReload()) { pendingUpdat
 if (!IN_CLAUDE && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   addEventListener("load", () => navigator.serviceWorker.register("sw.js").then(r => r.update()).catch(() => {}));
 }
-$("#version").innerHTML = "Versión " + APP_VERSION + " · " + APP_DATE + ' · <u>Novedades</u>';
+$("#version").innerHTML = "⚙︎ <u>Ajustes</u> · Versión " + APP_VERSION + " · " + APP_DATE;
+IK.init({ nombre: "Aventura Gabi", clave: "gabi", version: APP_VERSION, onNueva: () => doUpdate(), esInicio: safeToReload });
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(); });
 setInterval(checkUpdate, 5 * 60 * 1000);
 setTimeout(checkUpdate, 1500);
